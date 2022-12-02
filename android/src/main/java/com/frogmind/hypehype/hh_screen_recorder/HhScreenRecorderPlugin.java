@@ -84,6 +84,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     m_projectionManager = (MediaProjectionManager) m_flutterPluginBinding
             .getApplicationContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
+
     m_mediaRecorder = new MediaRecorder();
   }
 
@@ -156,7 +157,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
 
           sendFlutterResult(true, "HHRecorder: Start Recording -> Started capturing screen.");
-          m_mediaRecorder.start();
+          //m_mediaRecorder.start();
         }
         else
           sendFlutterResult(false, "HHRecorder: Start Recording -> Recording permission data is null, aborting.");
