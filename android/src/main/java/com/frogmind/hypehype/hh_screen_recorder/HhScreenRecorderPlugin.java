@@ -25,6 +25,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.plugin.common.PluginRegistry;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   private MediaRecorder m_mediaRecorder;
   private boolean printLn = true;
 
-  private String m_filename = "";
+  private String m_outputFile = "";
 
   private static final int SCREEN_RECORD_REQUEST_CODE = 777;
   private boolean m_isCapturing = false;
@@ -95,7 +96,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     }
     if(call.method.equals("startRecording"))
     {
-      m_filename = call.argument("filename");
+      m_outputFile = "data/com.frogmind.hypehype/" + call.argument("filename") + ".mp4";
       startRecording();
     }
     else if(call.method.equals("stopRecording"))
@@ -111,101 +112,84 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     m_channel.setMethodCallHandler(null);
   }
 
+  void sendFlutterResult(boolean success, String msg)
+  {
+    Map<Object, Object> dataMap = new HashMap<Object, Object>();
+    dataMap.put("file", m_outputFile);
+    dataMap.put("success", success);
+    dataMap.put("msg", msg);
+    JSONObject jsonObj = new JSONObject(dataMap);
+    m_flutterResult.success(jsonObj.toString());
+
+    if(printLn)
+      System.out.println(msg);
+  }
+
   void startRecording()
   {
     Intent permissionIntent = m_projectionManager != null
             ? m_projectionManager.createScreenCaptureIntent()
             : null;
     m_activity.startActivityForResult(permissionIntent, SCREEN_RECORD_REQUEST_CODE);
+
     if(printLn)
       System.out.println("HHRecorder: Start Recording -> Started permission prompt.");
   }
 
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-    Map<Object, Object> dataMap = new HashMap<Object, Object>();
-    dataMap.put("file", "");
-
-    System.out.println("HHRecorder: DEBUG ON ACTIVITY RESULT");
-
     if (requestCode == SCREEN_RECORD_REQUEST_CODE) {
       if (resultCode == Activity.RESULT_OK) {
         if (data != null) {
-
-          dataMap.put("success", true);
-          dataMap.put("msg", "HHRecorder: Start Recording -> Started capturing.");
-
           initRecorder();
           m_isCapturing = true;
           m_captureProjection = m_projectionManager.getMediaProjection(resultCode, data);
           m_virtualDisplay = m_captureProjection.createVirtualDisplay("HHCapture", m_metrics.widthPixels, m_metrics.heightPixels, m_metrics.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, m_mediaRecorder.getSurface(), null, null);
-          m_mediaRecorder.start();
 
-          if(printLn)
-            System.out.println("HHRecorder: Start Recording -> Started capturing screen.");
+          try {
+            m_mediaRecorder.prepare();
+          } catch (IOException e) {
+            e.printStackTrace();
+            sendFlutterResult(false, "HHRecorder: Start Recording -> Exception on media recorder prepare!");
+            return false;
+          }
+
+          sendFlutterResult(true, "HHRecorder: Start Recording -> Started capturing screen.");
+          m_mediaRecorder.start();
         }
         else
-        {
-          dataMap.put("success", false);
-          dataMap.put("msg", "HHRecorder: Start Recording -> Recording permission data is null, aborting.");
-
-          if(printLn)
-            System.out.println("HHRecorder: Start Recording -> Recording permission data is null, aborting.");
-        }
+          sendFlutterResult(false, "HHRecorder: Start Recording -> Recording permission data is null, aborting.");
       }
       else
-      {
-        dataMap.put("success", false);
-        dataMap.put("msg", "HHRecorder: Start Recording -> Recording permission result is NOT OK, aborting.");
-
-        if(printLn)
-          System.out.println("HHRecorder: Start Recording -> Recording permission result is NOT OK, aborting.");
-      }
+        sendFlutterResult(false, "HHRecorder: Start Recording -> Recording permission result is NOT OK, aborting.");
     }
 
-    JSONObject jsonObj = new JSONObject(dataMap);
-    m_flutterResult.success(jsonObj.toString());
     return true;
   }
 
   void stopRecording()
   {
-    Map<Object, Object> dataMap = new HashMap<Object, Object>();
-    dataMap.put("file", "");
-
     if(!m_isCapturing)
-    {
-      dataMap.put("success", false);
-      dataMap.put("msg", "HHRecorder: Stop Recording -> Can't stop recording as we are not capturing.");
-      JSONObject jsonObj = new JSONObject(dataMap);
-      m_flutterResult.success(jsonObj.toString());
-
-      if(printLn)
-        System.out.println("HHRecorder: Stop Recording -> Can't stop recording as we are not capturing.");
-    }
+      sendFlutterResult(false, "HHRecorder: Stop Recording -> Can't stop recording as we are not capturing.");
 
     m_mediaRecorder.stop();
-
-    dataMap.put("success", false);
-    dataMap.put("msg", "HHRecorder: Stop Recording -> Successfully stopped recording.");
-    JSONObject jsonObj = new JSONObject(dataMap);
-    m_flutterResult.success(jsonObj.toString());
-
-    if(printLn)
-      System.out.println("HHRecorder: Stop Recording -> Successfully stopped recording.");
+    m_mediaRecorder.reset();
+    m_virtualDisplay.release();
+    m_virtualDisplay = null;
+    sendFlutterResult(true, "HHRecorder: Stop Recording -> Successfully stopped media recording.");
   }
 
   private void initRecorder()
   {
     //m_mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+    // m_mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
     m_mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
     m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
     m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-    m_mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
     m_mediaRecorder.setVideoEncodingBitRate(512 * 1000);
     m_mediaRecorder.setVideoFrameRate(30);
     m_mediaRecorder.setVideoSize(m_metrics.widthPixels, m_metrics.heightPixels);
-    m_mediaRecorder.setOutputFile("data/com.frogmind.hypehype/" + m_filename + ".mp4");
+    m_mediaRecorder.setOutputFile(m_outputFile);
   }
 
 }
