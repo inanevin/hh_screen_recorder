@@ -56,6 +56,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     m_activity = binding.getActivity();
     m_metrics = new DisplayMetrics();
     m_activity.getWindowManager().getDefaultDisplay().getMetrics(m_metrics);
+    binding.addActivityResultListener(this);
   }
 
   @Override
@@ -70,7 +71,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   @Override
   public void onDetachedFromActivity() {
-
+  
   }
 
   @Override
