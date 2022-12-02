@@ -154,6 +154,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
             return false;
           }
 
+
           sendFlutterResult(true, "HHRecorder: Start Recording -> Started capturing screen.");
           m_mediaRecorder.start();
         }
