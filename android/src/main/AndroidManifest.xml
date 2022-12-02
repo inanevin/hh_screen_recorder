@@ -5,9 +5,10 @@
   <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-  <service
+</manifest>
+
+<service
             android:name=".services.MediaProjectionService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaProjection" />
-</manifest>
