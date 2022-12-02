@@ -188,6 +188,14 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
     m_virtualDisplay.release();
     m_virtualDisplay = null;
+
+    dataMap.put("success", false);
+    dataMap.put("msg", "HHRecorder: Stop Recording -> Successfully stopped recording.");
+    JSONObject jsonObj = new JSONObject(dataMap);
+    m_flutterResult.success(jsonObj.toString());
+
+    if(printLn)
+      System.out.println("HHRecorder: Stop Recording -> Successfully stopped recording.");
   }
 
 }
