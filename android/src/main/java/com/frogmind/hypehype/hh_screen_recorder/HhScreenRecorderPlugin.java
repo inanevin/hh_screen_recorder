@@ -1,18 +1,28 @@
 package com.frogmind.hypehype.hh_screen_recorder;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.os.Build;
+import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.view.Surface;
 import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import org.json.JSONObject;
 
@@ -84,7 +94,6 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     m_projectionManager = (MediaProjectionManager) m_flutterPluginBinding
             .getApplicationContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
-
     m_mediaRecorder = new MediaRecorder();
   }
 
@@ -131,6 +140,8 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     Intent permissionIntent = m_projectionManager != null
             ? m_projectionManager.createScreenCaptureIntent()
             : null;
+
+
     m_activity.startActivityForResult(permissionIntent, SCREEN_RECORD_REQUEST_CODE);
 
     if(printLn)
@@ -157,7 +168,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
 
           sendFlutterResult(true, "HHRecorder: Start Recording -> Started capturing screen.");
-          //m_mediaRecorder.start();
+          m_mediaRecorder.start();
         }
         else
           sendFlutterResult(false, "HHRecorder: Start Recording -> Recording permission data is null, aborting.");
