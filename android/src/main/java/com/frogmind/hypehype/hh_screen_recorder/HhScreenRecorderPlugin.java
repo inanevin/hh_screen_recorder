@@ -48,7 +48,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   private String m_filename = "";
 
-  private static final int SCREEN_RECORD_REQUEST_CODE = 1;
+  private static final int SCREEN_RECORD_REQUEST_CODE = 777;
   private boolean m_isCapturing = false;
 
   @Override
@@ -71,7 +71,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   @Override
   public void onDetachedFromActivity() {
-  
+
   }
 
   @Override
