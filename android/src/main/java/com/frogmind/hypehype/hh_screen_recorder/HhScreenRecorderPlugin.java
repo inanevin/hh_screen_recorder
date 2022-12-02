@@ -101,12 +101,12 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
     m_activity.startActivityForResult(permissionIntent, SCREEN_RECORD_REQUEST_CODE);
 
-    //  Map<Object, Object> dataMap = new HashMap<Object, Object>();
-    //  dataMap.put("success", false);
-    //  dataMap.put("file", "");
-    //  dataMap.put("msg", "Can not start capturing because Android API version is smaller than LOLLIPOP ;).");
-    //  JSONObject jsonObj = new JSONObject(dataMap);
-    //  m_flutterResult.success(jsonObj.toString());
+     Map<Object, Object> dataMap = new HashMap<Object, Object>();
+    dataMap.put("success", false);
+    dataMap.put("file", "");
+    dataMap.put("msg", "HHRecorder: StartRecorder -> Permission activity called.");
+    JSONObject jsonObj = new JSONObject(dataMap);
+    m_flutterResult.success(jsonObj.toString());
 
   }
 
