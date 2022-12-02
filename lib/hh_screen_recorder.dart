@@ -53,7 +53,7 @@ class HhScreenRecorder {
     return formatResponse.toJson();
   }
 
-   Future<Map<String, dynamic>> stopRecording({required String filename, String? directory}) async
+   Future<Map<String, dynamic>> stopRecording() async
   {
     var response = await _channel.invokeMethod('stopRecording');
     var formatResponse = RecordOutput.fromJson(json.decode(response));
