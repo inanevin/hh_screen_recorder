@@ -50,6 +50,8 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
     m_activity = binding.getActivity();
+    m_metrics = new DisplayMetrics();
+    m_activity.getWindowManager().getDefaultDisplay().getMetrics(m_metrics);
   }
 
   @Override
@@ -75,9 +77,6 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     m_context = flutterPluginBinding.getApplicationContext();
     m_projectionManager = (MediaProjectionManager) m_flutterPluginBinding
             .getApplicationContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-
-    m_metrics = new DisplayMetrics();
-    m_activity.getWindowManager().getDefaultDisplay().getMetrics(m_metrics);
   }
 
   @Override
@@ -106,8 +105,6 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   void startRecording()
   {
-     // System.out.println("Inan android: start recording");
-
     Intent permissionIntent = m_projectionManager != null
             ? m_projectionManager.createScreenCaptureIntent()
             : null;
