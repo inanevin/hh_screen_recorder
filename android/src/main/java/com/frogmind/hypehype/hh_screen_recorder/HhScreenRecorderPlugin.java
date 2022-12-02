@@ -48,7 +48,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   private String m_filename = "";
 
-  private static final int SCREEN_RECORD_REQUEST_CODE = 777;
+  private static final int SCREEN_RECORD_REQUEST_CODE = 1;
   private boolean m_isCapturing = false;
 
   @Override
@@ -116,7 +116,6 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
             ? m_projectionManager.createScreenCaptureIntent()
             : null;
     m_activity.startActivityForResult(permissionIntent, SCREEN_RECORD_REQUEST_CODE);
-
     if(printLn)
       System.out.println("HHRecorder: Start Recording -> Started permission prompt.");
   }
