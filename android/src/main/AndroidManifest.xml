@@ -11,6 +11,6 @@
             android:name=".ScreenCaptureService"
             android:enabled="true"
             android:exported="true"
-            tools:node="replace" />
+            />
     </application>
 </manifest>
