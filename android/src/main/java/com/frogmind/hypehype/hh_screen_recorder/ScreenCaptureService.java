@@ -19,6 +19,7 @@ import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.util.Log;
@@ -121,6 +122,11 @@ public class ScreenCaptureService extends Service {
 
             String filename = intent.getStringExtra("filename");
             String directory = intent.getStringExtra("directory");
+
+            if(directory == null)
+            {
+                directory = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES));
+            }
             m_outputPath = directory + "/" + filename + ".mp4";
 
             // INIT
