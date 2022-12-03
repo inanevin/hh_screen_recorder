@@ -1,5 +1,6 @@
 package com.frogmind.hypehype.hh_screen_recorder;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -32,6 +33,8 @@ import androidx.core.app.NotificationCompat;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -255,14 +258,12 @@ public class ScreenCaptureService extends Service {
         {
             if(m_directory == null)
             {
-                m_directory = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES));
+                //  m_directory = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES));
+                m_directory = Environment.getExternalStorageDirectory().toString();
             }
-            File dir = new File(m_directory);
-            dir.mkdirs();
+            String filePath = m_directory + File.separator + getDateAndTime() + ".mp4";
+            File file = new File(filePath);
 
-            Date currentTime = Calendar.getInstance().getTime(); // current time
-            String curTimeStr = currentTime.toString().replace(" ", "_");
-            File file = new File(dir.getAbsolutePath() + "/HypeHype_" + curTimeStr + ".mp4");
             System.out.println("HHRecorder: Setting output file: " + file.getAbsolutePath());
             m_mediaRecorder.setOutputFile(file.getAbsolutePath());
         }
@@ -281,5 +282,13 @@ public class ScreenCaptureService extends Service {
     private void initVirtualDisplay()
     {
         m_virtualDisplay = m_mediaProjection.createVirtualDisplay(TAG, m_screenWidth, m_screenHeight, m_screenDensity, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, m_mediaRecorder.getSurface(), null, null);
+    }
+
+    private String getDateAndTime(){
+        @SuppressLint("SimpleDateFormat") DateFormat dfDate = new SimpleDateFormat("yyyyMMdd");
+        String date=dfDate.format(Calendar.getInstance().getTime());
+        @SuppressLint("SimpleDateFormat") DateFormat dfTime = new SimpleDateFormat("HHmm");
+        String time = dfTime.format(Calendar.getInstance().getTime());
+        return date + "-" + time;
     }
 }
