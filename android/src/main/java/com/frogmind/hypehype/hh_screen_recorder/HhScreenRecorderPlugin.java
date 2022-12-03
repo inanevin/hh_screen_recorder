@@ -274,7 +274,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     }
     catch(Exception e)
     {
-      sendFlutterResult(true, "HHRecorder: Start Recording -> " + Log.getStackTraceString(e));
+      sendFlutterResult(true, "HHRecorder: Start Recording -> " + e.getMessage() + Log.getStackTraceString(e));
     }
   }
 

@@ -137,12 +137,12 @@ public class ScreenCaptureService extends Service {
             }
             catch (IOException e)
             {
-                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media recorder: " + Log.getStackTraceString(e));
+                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media recorder: " + e.getMessage() + Log.getStackTraceString(e));
                 return Service.START_STICKY;
             }
             catch (Exception e)
             {
-                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media recorder: " + Log.getStackTraceString(e));
+                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media recorder: " + e.getMessage() +Log.getStackTraceString(e));
                 return Service.START_STICKY;
             }
 
@@ -151,7 +151,7 @@ public class ScreenCaptureService extends Service {
             }
             catch (Exception e)
             {
-                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media projection: " + Log.getStackTraceString(e));
+                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media projection: " + e.getMessage() + Log.getStackTraceString(e));
                 return Service.START_STICKY;
             }
 
@@ -160,7 +160,7 @@ public class ScreenCaptureService extends Service {
             }
             catch (Exception e)
             {
-                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init virtual display: " + Log.getStackTraceString(e));
+                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init virtual display: " + e.getMessage() +Log.getStackTraceString(e));
                 return Service.START_STICKY;
             }
 
@@ -185,7 +185,7 @@ public class ScreenCaptureService extends Service {
             }
             catch (Exception e)
             {
-                HhScreenRecorderPlugin._instance.onFailedToStartCapture("Failed to start media recorder: " + Log.getStackTraceString(e));
+                HhScreenRecorderPlugin._instance.onFailedToStartCapture("Failed to start media recorder: " + e.getMessage() + Log.getStackTraceString(e));
                 return Service.START_STICKY;
             }
 
