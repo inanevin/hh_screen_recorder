@@ -29,8 +29,11 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 
 public class ScreenCaptureService extends Service {
@@ -45,7 +48,8 @@ public class ScreenCaptureService extends Service {
     private int m_mediaProjCode = 0;
     private boolean m_recordAudio = false;
     private Intent m_mediaProjData;
-    private String m_outputPath = "";
+    private String m_directory = "";
+    private String m_filename = "";
     private static final String TAG = "ScreenRecordService";
     private Uri m_uri = null;
 
@@ -126,14 +130,8 @@ public class ScreenCaptureService extends Service {
             m_mediaProjData = intent.getParcelableExtra("mediaProjData");
             m_recordAudio = intent.getBooleanExtra("recordAudio", false);
 
-            String filename = intent.getStringExtra("filename");
-            String directory = intent.getStringExtra("directory");
-
-            if(directory == null)
-            {
-                directory = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES));
-            }
-            m_outputPath = directory + "/" + filename + ".mp4";
+            m_filename = intent.getStringExtra("filename");
+            m_directory = intent.getStringExtra("directory");
 
             // INIT
             try{
@@ -249,14 +247,24 @@ public class ScreenCaptureService extends Service {
         m_mediaRecorder.setVideoEncodingBitRate(512 * 1000);
         m_mediaRecorder.setVideoFrameRate(30);
         m_mediaRecorder.setVideoSize(m_screenWidth, m_screenHeight);
-        System.out.println("HHRecorder: Setting output file: " + m_outputPath);
 
         //ContentResolver contentResolver = getContentResolver();
         //FileDescriptor inputPFD = Objects.requireNonNull(contentResolver.openFileDescriptor(m_uri, "rw")).getFileDescriptor();
 
         try
         {
-            m_mediaRecorder.setOutputFile(m_outputPath);
+            if(m_directory == null)
+            {
+                m_directory = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES));
+            }
+            File dir = new File(m_directory);
+            dir.mkdirs();
+
+            Date currentTime = Calendar.getInstance().getTime(); // current time
+            String curTimeStr = currentTime.toString().replace(" ", "_");
+            File file = new File(dir.getAbsolutePath() + "/HypeHype_" + curTimeStr + ".mp4");
+            System.out.println("HHRecorder: Setting output file: " + file.getAbsolutePath());
+            m_mediaRecorder.setOutputFile(file.getAbsolutePath());
         }
         catch (Exception e) {
             System.out.println("HHRecorder: Media Recorder Set output file failed");
