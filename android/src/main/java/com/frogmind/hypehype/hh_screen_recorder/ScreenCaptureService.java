@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ import android.hardware.display.VirtualDisplay;
 import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,6 +29,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -44,6 +47,7 @@ public class ScreenCaptureService extends Service {
     private Intent m_mediaProjData;
     private String m_outputPath = "";
     private static final String TAG = "ScreenRecordService";
+    private Uri m_uri = null;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -137,12 +141,12 @@ public class ScreenCaptureService extends Service {
             }
             catch (IOException e)
             {
-                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media recorder: " + e.getMessage() + Log.getStackTraceString(e));
+                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media recorder: " + Log.getStackTraceString(e));
                 return Service.START_STICKY;
             }
             catch (Exception e)
             {
-                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media recorder: " + e.getMessage() +Log.getStackTraceString(e));
+                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media recorder: " + Log.getStackTraceString(e));
                 return Service.START_STICKY;
             }
 
@@ -151,7 +155,7 @@ public class ScreenCaptureService extends Service {
             }
             catch (Exception e)
             {
-                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media projection: " + e.getMessage() + Log.getStackTraceString(e));
+                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media projection: " + Log.getStackTraceString(e));
                 return Service.START_STICKY;
             }
 
@@ -160,7 +164,7 @@ public class ScreenCaptureService extends Service {
             }
             catch (Exception e)
             {
-                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init virtual display: " + e.getMessage() +Log.getStackTraceString(e));
+                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init virtual display: " + Log.getStackTraceString(e));
                 return Service.START_STICKY;
             }
 
@@ -185,7 +189,7 @@ public class ScreenCaptureService extends Service {
             }
             catch (Exception e)
             {
-                HhScreenRecorderPlugin._instance.onFailedToStartCapture("Failed to start media recorder: " + e.getMessage() + Log.getStackTraceString(e));
+                HhScreenRecorderPlugin._instance.onFailedToStartCapture("Failed to start media recorder: " + Log.getStackTraceString(e));
                 return Service.START_STICKY;
             }
 
@@ -246,7 +250,18 @@ public class ScreenCaptureService extends Service {
         m_mediaRecorder.setVideoFrameRate(30);
         m_mediaRecorder.setVideoSize(m_screenWidth, m_screenHeight);
         System.out.println("HHRecorder: Setting output file: " + m_outputPath);
-        m_mediaRecorder.setOutputFile(m_outputPath);
+
+        //ContentResolver contentResolver = getContentResolver();
+        //FileDescriptor inputPFD = Objects.requireNonNull(contentResolver.openFileDescriptor(m_uri, "rw")).getFileDescriptor();
+
+        try
+        {
+            m_mediaRecorder.setOutputFile(m_outputPath);
+        }
+        catch (Exception e) {
+            System.out.println("HHRecorder: Media Recorder Set output file failed");
+        }
+
         m_mediaRecorder.prepare();
     }
 
