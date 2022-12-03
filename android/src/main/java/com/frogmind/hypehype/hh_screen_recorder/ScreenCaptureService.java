@@ -45,16 +45,9 @@ public class ScreenCaptureService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //createNotificationChannel();
-       // Intent intent1 = new Intent(this, ScreenCaptureService.class);
-       // PendingIntent pendingIntent1 = PendingIntent.getActivity(this, 0, intent1, 0);
 
-       // Notification notification1 = new NotificationCompat.Builder(this, "ScreenRecorder")
-       //         .setContentTitle("HH recorder")
-       //         .setContentText("Capturing screen")
-       //         .setContentIntent(pendingIntent1).build();
+        System.out.println("HHRecorder: start command received successfully.");
 
-       // startForeground(1, notification1);
 
         if(intent != null && intent.getAction() != null)
         {

@@ -257,6 +257,8 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
       service.putExtra("density", m_metrics.densityDpi);
       service.putExtra("mediaProjCode", code);
       service.putExtra("mediaProjData", data);
+
+      System.out.println("HHRecorder: requesting to start the service");
       m_context.startService(service);
     }
     catch(Exception e)
