@@ -246,10 +246,12 @@ public class ScreenCaptureService extends Service {
 
         m_mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
         m_mediaRecorder.setVideoEncodingBitRate(512 * 1000);
         m_mediaRecorder.setVideoFrameRate(30);
         m_mediaRecorder.setVideoSize(m_screenWidth, m_screenHeight);
+
+        System.out.println("HHRecorder: Initing recorder, width: " + m_screenWidth + " height: " + m_screenHeight);
 
         //ContentResolver contentResolver = getContentResolver();
         //FileDescriptor inputPFD = Objects.requireNonNull(contentResolver.openFileDescriptor(m_uri, "rw")).getFileDescriptor();
