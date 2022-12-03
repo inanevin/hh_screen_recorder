@@ -248,7 +248,7 @@ public class ScreenCaptureService extends Service {
         m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
 
-        m_mediaRecorder.setVideoSize(m_screenWidth, m_screenHeight);
+        m_mediaRecorder.setVideoSize(200, 400);
 
         m_mediaRecorder.setVideoEncodingBitRate(12000000);
         m_mediaRecorder.setVideoFrameRate(30);
