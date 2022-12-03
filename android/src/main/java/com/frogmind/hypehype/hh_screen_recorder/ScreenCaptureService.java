@@ -245,7 +245,7 @@ public class ScreenCaptureService extends Service {
         }
 
         m_mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         m_mediaRecorder.setVideoEncodingBitRate(512 * 1000);
         m_mediaRecorder.setVideoFrameRate(30);
@@ -262,7 +262,7 @@ public class ScreenCaptureService extends Service {
                 // m_directory = Environment.getExternalStorageDirectory().toString();
                 m_directory = getExternalCacheDir().getAbsolutePath();
             }
-            String filePath = m_directory + File.separator + getDateAndTime() + ".mp4";
+            String filePath = m_directory + File.separator + getDateAndTime() + ".3gp";
             File file = new File(filePath);
 
             System.out.println("HHRecorder: Setting output file: " + file.getAbsolutePath());
