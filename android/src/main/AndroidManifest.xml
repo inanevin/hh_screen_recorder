@@ -5,4 +5,12 @@
   <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.RECORD_AUDIO" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+  <application>
+        <service
+            android:name=".ScreenCaptureService"
+            android:enabled="true"
+            android:exported="true"
+            tools:node="replace" />
+    </application>
 </manifest>
