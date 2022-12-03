@@ -259,7 +259,8 @@ public class ScreenCaptureService extends Service {
             if(m_directory == null)
             {
                 //  m_directory = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES));
-                m_directory = Environment.getExternalStorageDirectory().toString();
+                // m_directory = Environment.getExternalStorageDirectory().toString();
+                m_directory = getExternalCacheDir().getAbsolutePath();
             }
             String filePath = m_directory + File.separator + getDateAndTime() + ".mp4";
             File file = new File(filePath);
