@@ -11,6 +11,7 @@
             android:name=".ScreenCaptureService"
             android:enabled="true"
             android:exported="true"
+            android:foregroundServiceType="mediaProjection"
             />
     </application>
 </manifest>
