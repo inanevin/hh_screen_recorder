@@ -40,6 +40,7 @@ public class ScreenCaptureService extends Service {
     private int m_screenHeight = 0;
     private int m_screenDensity = 0;
     private int m_mediaProjCode = 0;
+    private boolean m_recordAudio = false;
     private Intent m_mediaProjData;
     private String m_outputPath = "";
     private static final String TAG = "ScreenRecordService";
@@ -119,6 +120,7 @@ public class ScreenCaptureService extends Service {
             m_screenDensity = intent.getIntExtra("density", 1);
             m_mediaProjCode = intent.getIntExtra("mediaProjCode", -1);
             m_mediaProjData = intent.getParcelableExtra("mediaProjData");
+            m_recordAudio = intent.getBooleanExtra("recordAudio", false);
 
             String filename = intent.getStringExtra("filename");
             String directory = intent.getStringExtra("directory");
@@ -223,8 +225,15 @@ public class ScreenCaptureService extends Service {
 
     private void initRecorder() throws IOException {
         m_mediaRecorder = new MediaRecorder();
-        // m_mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        // m_mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        if(m_recordAudio)
+        {
+            m_mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+            m_mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            m_mediaRecorder.setAudioEncodingBitRate(128000);
+            m_mediaRecorder.setAudioSamplingRate(44100);
+        }
+
         m_mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);

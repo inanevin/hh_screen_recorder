@@ -64,6 +64,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   private String m_filename = "";
   private String m_directory = "";
+  private boolean m_recordAudio = false;
 
   private static final int SCREEN_RECORD_REQUEST_CODE = 777;
   private Intent service;
@@ -129,6 +130,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
       m_awatingFlutterResult = true;
       m_filename = call.argument("filename");
       m_directory = call.argument("directory");
+      m_recordAudio = call.argument("recordAudio");
 
       startRecording();
     }
@@ -256,7 +258,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
       service = new Intent(m_context, ScreenCaptureService.class);
       service.putExtra("filename", m_filename);
       service.putExtra("directory", m_directory);
-      service.putExtra("data", data);
+      service.putExtra("recordAudio", m_recordAudio);
       service.putExtra("width", m_metrics.widthPixels);
       service.putExtra("height", m_metrics.heightPixels);
       service.putExtra("density", m_metrics.densityDpi);

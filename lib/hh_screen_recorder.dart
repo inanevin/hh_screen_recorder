@@ -46,9 +46,9 @@ class HhScreenRecorder {
     return HhScreenRecorderPlatform.instance.getPlatformVersion();
   }
 
-  Future<Map<String, dynamic>> startRecording({required String filename, String? directory}) async
+  Future<Map<String, dynamic>> startRecording({required String filename, String? directory, bool? recordAudio}) async
   {
-    var response = await _channel.invokeMethod('startRecording',{ "filename": filename, "directory": directory});
+    var response = await _channel.invokeMethod('startRecording',{ "filename": filename, "directory": directory, "recordAudio": recordAudio});
     var formatResponse = RecordOutput.fromJson(json.decode(response));
     return formatResponse.toJson();
   }
