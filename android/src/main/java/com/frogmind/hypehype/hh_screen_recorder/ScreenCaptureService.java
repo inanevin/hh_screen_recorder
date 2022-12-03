@@ -135,6 +135,11 @@ public class ScreenCaptureService extends Service {
             try{
                 initRecorder();
             }
+            catch (IOException e)
+            {
+                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media recorder: " + Log.getStackTraceString(e));
+                return Service.START_STICKY;
+            }
             catch (Exception e)
             {
                 HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media recorder: " + Log.getStackTraceString(e));
