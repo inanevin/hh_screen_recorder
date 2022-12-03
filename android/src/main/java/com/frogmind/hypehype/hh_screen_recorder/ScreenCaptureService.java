@@ -45,7 +45,7 @@ public class ScreenCaptureService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        super.onStartCommand(intent, flags, startId);
         System.out.println("HHRecorder: start command received successfully.");
 
 
