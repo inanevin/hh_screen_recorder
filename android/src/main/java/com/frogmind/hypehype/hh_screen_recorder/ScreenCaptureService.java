@@ -16,16 +16,16 @@ public class ScreenCaptureService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        createNotificationChannel();
-        Intent intent1 = new Intent(this, ScreenCaptureService.class);
-        PendingIntent pendingIntent1 = PendingIntent.getActivity(this, 0, intent1, 0);
+        //createNotificationChannel();
+       // Intent intent1 = new Intent(this, ScreenCaptureService.class);
+       // PendingIntent pendingIntent1 = PendingIntent.getActivity(this, 0, intent1, 0);
 
-        Notification notification1 = new NotificationCompat.Builder(this, "ScreenRecorder")
-                .setContentTitle("HH recorder")
-                .setContentText("Capturing screen")
-                .setContentIntent(pendingIntent1).build();
+       // Notification notification1 = new NotificationCompat.Builder(this, "ScreenRecorder")
+       //         .setContentTitle("HH recorder")
+       //         .setContentText("Capturing screen")
+       //         .setContentIntent(pendingIntent1).build();
 
-        startForeground(1, notification1);
+       // startForeground(1, notification1);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -36,18 +36,18 @@ public class ScreenCaptureService extends Service {
     }
 
     private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel channel = new NotificationChannel("ScreenRecorder", "Foreground notification",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        //    NotificationChannel channel = new NotificationChannel("ScreenRecorder", "Foreground notification",
+       //             NotificationManager.IMPORTANCE_DEFAULT);
+       //     NotificationManager manager = getSystemService(NotificationManager.class);
+       //     manager.createNotificationChannel(channel);
+      //  }
     }
 
     @Override
     public void onDestroy() {
-        stopForeground(true);
-        stopSelf();
+      //  stopForeground(true);
+      //  stopSelf();
 
         super.onDestroy();
     }
