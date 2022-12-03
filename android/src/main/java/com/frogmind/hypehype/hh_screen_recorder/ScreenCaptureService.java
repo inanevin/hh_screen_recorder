@@ -193,8 +193,6 @@ public class ScreenCaptureService extends Service {
                 HhScreenRecorderPlugin._instance.onFailedToStartCapture("Failed to start media recorder: " + Log.getStackTraceString(e));
                 return Service.START_STICKY;
             }
-
-            HhScreenRecorderPlugin._instance.onStartedCapture();
         }
 
         return Service.START_STICKY;
