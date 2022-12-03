@@ -69,6 +69,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   private Intent service;
   public static HhScreenRecorderPlugin _instance;
   private boolean m_canResumePause = false;
+  private boolean m_awatingFlutterResult = false;
 
   enum RecordingState
   {
@@ -125,6 +126,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     }
     if(call.method.equals("startRecording"))
     {
+      m_awatingFlutterResult = true;
       m_filename = call.argument("filename");
       m_directory = call.argument("directory");
 
@@ -132,14 +134,17 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     }
     else if(call.method.equals("stopRecording"))
     {
+      m_awatingFlutterResult = true;
       stopRecording();
     }
     else if(call.method.equals("pauseRecording"))
     {
+      m_awatingFlutterResult = true;
       pauseRecording();
     }
     else if(call.method.equals("resumeRecording"))
     {
+      m_awatingFlutterResult = true;
       resumeRecording();
     }
     else if(call.method.equals("isPauseResumeEnabled"))
@@ -307,6 +312,19 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     if (what == 268435556)
     {
       // too short frames.
+    }
+
+    System.out.println("HHRecorder: Media recorder error! Code: " + what);
+
+    if(m_recordingState == RecordingState.Recording)
+    {
+      Intent service = new Intent(m_context, ScreenCaptureService.class);
+      m_context.stopService(service);
+    }
+
+    if(m_awatingFlutterResult)
+    {
+      sendFlutterResult(false, "Media recorder error! Code: " + what);
     }
   }
 
