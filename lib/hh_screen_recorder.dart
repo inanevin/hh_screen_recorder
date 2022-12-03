@@ -53,10 +53,30 @@ class HhScreenRecorder {
     return formatResponse.toJson();
   }
 
-   Future<Map<String, dynamic>> stopRecording() async
+  Future<Map<String, dynamic>> stopRecording() async
   {
     var response = await _channel.invokeMethod('stopRecording');
     var formatResponse = RecordOutput.fromJson(json.decode(response));
     return formatResponse.toJson();
+  }
+  
+  Future<Map<String, dynamic>> pauseRecording() async
+  {
+    var response = await _channel.invokeMethod('pauseRecording');
+    var formatResponse = RecordOutput.fromJson(json.decode(response));
+    return formatResponse.toJson();
+  }
+
+  Future<Map<String, dynamic>> resumeRecording() async
+  {
+    var response = await _channel.invokeMethod('resumeRecording');
+    var formatResponse = RecordOutput.fromJson(json.decode(response));
+    return formatResponse.toJson();
+  }
+
+  Future<bool> isPauseResumeEnabled() async
+  {
+    var response = await _channel.invokeMethod('isPauseResumeEnabled');
+    return response;
   }
 }

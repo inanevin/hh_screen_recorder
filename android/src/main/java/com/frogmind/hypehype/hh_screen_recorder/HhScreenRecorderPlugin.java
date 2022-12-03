@@ -15,8 +15,12 @@ import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.ResultReceiver;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceView;
 
@@ -57,10 +61,23 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   private MediaRecorder m_mediaRecorder;
   private boolean printLn = true;
 
-  private String m_outputFile = "";
+
+  private String m_filename = "";
+  private String m_directory = "";
 
   private static final int SCREEN_RECORD_REQUEST_CODE = 777;
-  private boolean m_isCapturing = false;
+  private Intent service;
+  public static HhScreenRecorderPlugin _instance;
+  private boolean m_canResumePause = false;
+
+  enum RecordingState
+  {
+    None,
+    Recording,
+    Paused
+  }
+
+  RecordingState m_recordingState;
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
@@ -95,6 +112,8 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
             .getApplicationContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
     m_mediaRecorder = new MediaRecorder();
+    _instance = this;
+    m_canResumePause = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
   }
 
   @Override
@@ -106,13 +125,28 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     }
     if(call.method.equals("startRecording"))
     {
-      m_outputFile = "data/com.frogmind.hypehype/" + call.argument("filename") + ".mp4";
+      m_filename = call.argument("filename");
+      m_directory = call.argument("directory");
+
       startRecording();
     }
     else if(call.method.equals("stopRecording"))
     {
       stopRecording();
-    } else {
+    }
+    else if(call.method.equals("pauseRecording"))
+    {
+      pauseRecording();
+    }
+    else if(call.method.equals("resumeRecording"))
+    {
+      resumeRecording();
+    }
+    else if(call.method.equals("isPauseResumeEnabled"))
+    {
+      m_flutterResult.success(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+    }
+    else {
       result.notImplemented();
     }
   }
@@ -125,7 +159,8 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   void sendFlutterResult(boolean success, String msg)
   {
     Map<Object, Object> dataMap = new HashMap<Object, Object>();
-    dataMap.put("file", m_outputFile);
+    dataMap.put("filename", m_filename);
+    dataMap.put("directory", m_directory);
     dataMap.put("success", success);
     dataMap.put("msg", msg);
     JSONObject jsonObj = new JSONObject(dataMap);
@@ -148,27 +183,54 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
       System.out.println("HHRecorder: Start Recording -> Started permission prompt.");
   }
 
+  void stopRecording()
+  {
+    if(m_recordingState == RecordingState.Recording || m_recordingState == RecordingState.Paused)
+    {
+      Intent service = new Intent(m_context, ScreenCaptureService.class);
+      m_context.stopService(service);
+      sendFlutterResult(true, "HHRecorder: Stop Recording -> Successfully stopped media recording.");
+    }
+    else
+      sendFlutterResult(false, "HHRecorder: Stop Recording -> Can't stop recording as we are not capturing.");
+  }
+
+  void pauseRecording()
+  {
+    if(!m_canResumePause)
+      sendFlutterResult(false, "HHRecorder: Pause Recording -> Can't pause recording as it's not supported with this API level.");
+
+    if(m_recordingState == RecordingState.Recording)
+    {
+      Intent service = new Intent(m_context, ScreenCaptureService.class);
+      service.setAction("pause");
+      m_context.startService(service);
+    }
+    else
+      sendFlutterResult(false, "HHRecorder: Pause Recording -> Can't pause recording as we are not capturing.");
+  }
+
+  void resumeRecording()
+  {
+    if(!m_canResumePause)
+      sendFlutterResult(false, "HHRecorder: Resume Recording -> Can't resume recording as it's not supported with this API level.");
+
+    if(m_recordingState == RecordingState.Paused)
+    {
+      Intent service = new Intent(m_context, ScreenCaptureService.class);
+      service.setAction("resume");
+      m_context.startService(service);
+    }
+    else
+      sendFlutterResult(false, "HHRecorder: Resume Recording -> Can't resume recording as we are not paused.");
+  }
+
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == SCREEN_RECORD_REQUEST_CODE) {
       if (resultCode == Activity.RESULT_OK) {
         if (data != null) {
-          initRecorder();
-          m_isCapturing = true;
-          m_captureProjection = m_projectionManager.getMediaProjection(resultCode, data);
-          m_virtualDisplay = m_captureProjection.createVirtualDisplay("HHCapture", m_metrics.widthPixels, m_metrics.heightPixels, m_metrics.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, m_mediaRecorder.getSurface(), null, null);
-
-          try {
-            m_mediaRecorder.prepare();
-          } catch (IOException e) {
-            e.printStackTrace();
-            sendFlutterResult(false, "HHRecorder: Start Recording -> Exception on media recorder prepare!");
-            return false;
-          }
-
-
-          sendFlutterResult(true, "HHRecorder: Start Recording -> Started capturing screen.");
-          m_mediaRecorder.start();
+          startService(resultCode, data);
         }
         else
           sendFlutterResult(false, "HHRecorder: Start Recording -> Recording permission data is null, aborting.");
@@ -180,29 +242,77 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     return true;
   }
 
-  void stopRecording()
-  {
-    if(!m_isCapturing)
-      sendFlutterResult(false, "HHRecorder: Stop Recording -> Can't stop recording as we are not capturing.");
+  // ******************** SERVICE ************************
 
-    m_mediaRecorder.stop();
-    m_mediaRecorder.reset();
-    m_virtualDisplay.release();
-    m_virtualDisplay = null;
-    sendFlutterResult(true, "HHRecorder: Stop Recording -> Successfully stopped media recording.");
+  private void startService(int code, Intent data)
+  {
+    try
+    {
+      service = new Intent(m_context, ScreenCaptureService.class);
+      service.putExtra("filename", m_filename);
+      service.putExtra("directory", m_directory);
+      service.putExtra("data", data);
+      service.putExtra("width", m_metrics.widthPixels);
+      service.putExtra("height", m_metrics.heightPixels);
+      service.putExtra("density", m_metrics.densityDpi);
+      service.putExtra("mediaProjCode", code);
+      service.putExtra("mediaProjData", data);
+      m_context.startService(service);
+    }
+    catch(Exception e)
+    {
+      sendFlutterResult(true, "HHRecorder: Start Recording -> " + Log.getStackTraceString(e));
+    }
   }
 
-  private void initRecorder()
+  public void onStartedCapture()
   {
-    //m_mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-    // m_mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-    m_mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-    m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-    m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-    m_mediaRecorder.setVideoEncodingBitRate(512 * 1000);
-    m_mediaRecorder.setVideoFrameRate(30);
-    m_mediaRecorder.setVideoSize(m_metrics.widthPixels, m_metrics.heightPixels);
-    m_mediaRecorder.setOutputFile(m_outputFile);
+    m_recordingState = RecordingState.Recording;
+    sendFlutterResult(true, "HHRecorder: Start Recording -> Successfully started recording.");
   }
+
+  public void onFailedToStartCapture(String reason)
+  {
+    m_recordingState = RecordingState.None;
+    sendFlutterResult(true, "HHRecorder: Start Recording -> Error: " + reason);
+
+    try {
+      Intent mService = new Intent(m_context, ScreenCaptureService.class);
+      m_context.stopService(mService);
+    }catch (Exception e){
+      // ignore
+    }
+  }
+
+  public void onPausedRecording()
+  {
+    m_recordingState = RecordingState.Paused;
+    sendFlutterResult(true, "HHRecorder: Pause Recording -> Successfully paused recording.");
+  }
+
+  public void onResumedRecording()
+  {
+    m_recordingState = RecordingState.Recording;
+    sendFlutterResult(true, "HHRecorder: Resume Recording -> Successfully resumed recording.");
+  }
+
+  public void onMediaRecorderError(int what, int i1)
+  {
+    if (what == 268435556)
+    {
+      // too short frames.
+    }
+  }
+
+  public void onMediaRecorderInfo(int what, int i1)
+  {
+
+  }
+
+  public void onServiceDestroyed()
+  {
+
+  }
+
 
 }
