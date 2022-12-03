@@ -216,6 +216,7 @@ public class ScreenCaptureService extends Service {
     }
 
     private void initRecorder() throws IOException {
+        m_mediaRecorder = new MediaRecorder();
         // m_mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         // m_mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         m_mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
