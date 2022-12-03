@@ -261,10 +261,10 @@ public class ScreenCaptureService extends Service {
             if(m_directory == null)
             {
                 //  m_directory = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES));
-                // m_directory = Environment.getExternalStorageDirectory().toString();
-                m_directory = getExternalCacheDir().getAbsolutePath();
+                m_directory = Environment.getExternalStorageDirectory().toString();
+                //m_directory = getExternalCacheDir().getAbsolutePath();
             }
-            String filePath = m_directory + File.separator + getDateAndTime() + ".mp4";
+            String filePath = m_directory + File.separator + m_filename + "_" + getDateAndTime() + ".mp4";
 
             System.out.println("HHRecorder: Setting output file: " + filePath);
             m_mediaRecorder.setOutputFile(filePath);
