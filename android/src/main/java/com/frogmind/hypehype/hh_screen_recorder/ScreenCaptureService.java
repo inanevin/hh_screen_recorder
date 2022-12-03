@@ -245,6 +245,7 @@ public class ScreenCaptureService extends Service {
         m_mediaRecorder.setVideoEncodingBitRate(512 * 1000);
         m_mediaRecorder.setVideoFrameRate(30);
         m_mediaRecorder.setVideoSize(m_screenWidth, m_screenHeight);
+        System.out.println("HHRecorder: Setting output file: " + m_outputPath);
         m_mediaRecorder.setOutputFile(m_outputPath);
         m_mediaRecorder.prepare();
     }
