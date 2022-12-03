@@ -104,6 +104,11 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   }
 
+  public Activity getActivity()
+  {
+    return m_activity;
+  }
+
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     m_channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "hh_screen_recorder");

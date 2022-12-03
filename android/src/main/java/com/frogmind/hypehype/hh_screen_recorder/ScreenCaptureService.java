@@ -261,7 +261,14 @@ public class ScreenCaptureService extends Service {
             if(m_directory == null)
             {
                 //  m_directory = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES));
-                m_directory = Environment.getExternalStorageDirectory().toString();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1)
+                {
+                    m_directory =  HhScreenRecorderPlugin._instance.getActivity().getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath();
+                }
+                else
+                {
+                    m_directory = Environment.getExternalStorageDirectory().toString();
+                }
                 //m_directory = getExternalCacheDir().getAbsolutePath();
             }
             String filePath = m_directory + File.separator + m_filename + "_" + getDateAndTime() + ".mp4";
