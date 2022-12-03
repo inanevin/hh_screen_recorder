@@ -263,10 +263,9 @@ public class ScreenCaptureService extends Service {
                 m_directory = getExternalCacheDir().getAbsolutePath();
             }
             String filePath = m_directory + File.separator + getDateAndTime() + ".3gp";
-            File file = new File(filePath);
 
-            System.out.println("HHRecorder: Setting output file: " + file.getAbsolutePath());
-            m_mediaRecorder.setOutputFile(file.getAbsolutePath());
+            System.out.println("HHRecorder: Setting output file: " + filePath);
+            m_mediaRecorder.setOutputFile(filePath);
         }
         catch (Exception e) {
             System.out.println("HHRecorder: Media Recorder Set output file failed");
