@@ -121,9 +121,8 @@ public class ScreenCaptureService extends Service {
             }
 
             // Retrieve params
-            m_screenWidth = CodecUtility._instance.getMaxSupportedWidth();
-            m_screenHeight = CodecUtility._instance.getMaxSupportedHeight();
-
+            m_screenWidth = intent.getIntExtra("width", 0);
+            m_screenHeight = intent.getIntExtra("height", 0);
 
             if(m_screenWidth == 0 || m_screenHeight == 0)
             {

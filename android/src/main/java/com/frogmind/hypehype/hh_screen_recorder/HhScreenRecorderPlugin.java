@@ -1,5 +1,7 @@
 package com.frogmind.hypehype.hh_screen_recorder;
 
+import static android.content.Context.WINDOW_SERVICE;
+
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -23,6 +25,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,9 +58,6 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   private Context m_context;
   private Activity m_activity;
   private MediaProjectionManager m_projectionManager;
-  private MediaProjection m_captureProjection;
-  private VirtualDisplay m_virtualDisplay;
-  private MediaRecorder m_mediaRecorder;
   private boolean printLn = true;
 
 
@@ -71,6 +71,11 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   private boolean m_canResumePause = false;
   private boolean m_awatingFlutterResult = false;
   private CodecUtility m_codecUtility = null;
+  private int m_width = 0;
+  private int m_height = 0;
+  private int m_density = 0;
+  private final String MIME_TYPE_DEF = "";
+  private final String MIME_TYPE_FB = "";
 
   enum RecordingState
   {
@@ -116,12 +121,18 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     m_projectionManager = (MediaProjectionManager) m_flutterPluginBinding
             .getApplicationContext().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
-    m_mediaRecorder = new MediaRecorder();
     _instance = this;
     m_canResumePause = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
     m_codecUtility = new CodecUtility();
     m_codecUtility.setContext(m_context);
     m_codecUtility._instance = m_codecUtility;
+    m_width = CodecUtility._instance.getMaxSupportedWidth();
+    m_height = CodecUtility._instance.getMaxSupportedHeight();
+
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    WindowManager wm = (WindowManager) m_context.getSystemService(WINDOW_SERVICE);
+    wm.getDefaultDisplay().getRealMetrics(displayMetrics);
+    m_density = displayMetrics.densityDpi;
   }
 
   @Override
@@ -158,6 +169,10 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     else if(call.method.equals("isPauseResumeEnabled"))
     {
       m_flutterResult.success(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+    }
+    else if(call.method.equals("isRecordingSupported"))
+    {
+        m_codecUtility.isMimeTypeSupported()
     }
     else {
       result.notImplemented();
@@ -267,6 +282,9 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
       service.putExtra("recordAudio", m_recordAudio);
       service.putExtra("mediaProjCode", code);
       service.putExtra("mediaProjData", data);
+      service.putExtra("width", m_width);
+      service.putExtra("height", m_height);
+      service.putExtra("density", m_density);
 
       System.out.println("HHRecorder: requesting to start the service");
 

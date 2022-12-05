@@ -74,9 +74,19 @@ class HhScreenRecorder {
     return formatResponse.toJson();
   }
 
+  // Not all Android API's support MediaRecorder stop/pause
+  // Do not let the user pause if so.
   Future<bool> isPauseResumeEnabled() async
   {
     var response = await _channel.invokeMethod('isPauseResumeEnabled');
+    return response;
+  }
+
+  // Should check for device information,
+  // Whether h264 encoder & MP4 file format is supported or not.
+  Future<bool> isRecordingSupported() async
+  {
+    var response = await _channel.invokeMethod('isRecordingSupported');
     return response;
   }
 }
