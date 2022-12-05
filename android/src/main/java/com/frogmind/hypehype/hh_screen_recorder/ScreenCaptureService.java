@@ -60,6 +60,7 @@ public class ScreenCaptureService extends Service {
     private static final String TAG = "ScreenRecordService";
     private boolean m_isRecording = false;
     private String m_mediaRecorderPath = "";
+    private File m_outputFile = null;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -212,11 +213,10 @@ public class ScreenCaptureService extends Service {
         {
             m_isRecording = false;
             m_mediaRecorder.stop();
-            ContentValues values = new ContentValues(3);
-            values.put(MediaStore.Video.Media.TITLE, "My video title");
-            values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
-            values.put(MediaStore.Video.Media.DATA, m_mediaRecorderPath);
-            getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+            Intent send = new Intent(Intent.ACTION_SEND);
+            send.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(m_outputFile));
+            send.putExtra(Intent.EXTRA_SUBJECT, "Sharing recording...");
+            startActivity(Intent.createChooser(send, "Send Recording"));
         }
 
         HhScreenRecorderPlugin._instance.onServiceDestroyed();
@@ -301,6 +301,7 @@ public class ScreenCaptureService extends Service {
             System.out.println("HHRecorder: Setting output file: " + filePath);
             m_mediaRecorderPath = filePath;
             m_mediaRecorder.setOutputFile(filePath);
+            m_outputFile = new File(filePath);
         }
         catch (Exception e) {
             System.out.println("HHRecorder: Media Recorder Set output file failed");
