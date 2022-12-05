@@ -247,7 +247,7 @@ public class ScreenCaptureService extends Service {
         m_mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
 
         String outputExtension = "";
-        if(HhScreenRecorderPlugin.SELECTED_MIME_TYPE == HhScreenRecorderPlugin.MIME_TYPE_DEF)
+        if(HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_DEF))
         {
             m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             outputExtension = ".mp4";
@@ -258,13 +258,8 @@ public class ScreenCaptureService extends Service {
             outputExtension = ".3gp";
         }
 
-        MediaCodecInfo info = CodecUtility._instance.selectVideoCodec(HhScreenRecorderPlugin.SELECTED_MIME_TYPE);
-        System.out.println("HHRecorder: CODEC: " + info.getName());
-
         m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-
         m_mediaRecorder.setVideoSize(m_screenWidth, m_screenHeight);
-
         //m_mediaRecorder.setVideoEncodingBitRate(12000000);
         m_mediaRecorder.setVideoEncodingBitRate(5 * m_screenWidth * m_screenHeight);
         m_mediaRecorder.setVideoFrameRate(60);
