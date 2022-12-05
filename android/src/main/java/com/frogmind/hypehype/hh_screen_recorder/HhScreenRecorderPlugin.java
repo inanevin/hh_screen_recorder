@@ -172,7 +172,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     }
     else if(call.method.equals("isRecordingSupported"))
     {
-        m_codecUtility.isMimeTypeSupported()
+       // m_codecUtility.isMimeTypeSupported()
     }
     else {
       result.notImplemented();
