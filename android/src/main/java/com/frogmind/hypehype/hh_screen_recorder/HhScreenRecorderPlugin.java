@@ -255,9 +255,9 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   {
     if(m_recordingState == RecordingState.Recording || m_recordingState == RecordingState.Paused)
     {
+      sendFlutterResult(true, "HHRecorder: Stop Recording -> Successfully stopped media recording.");
       Intent service = new Intent(m_context, ScreenCaptureService.class);
       m_context.stopService(service);
-      sendFlutterResult(true, "HHRecorder: Stop Recording -> Successfully stopped media recording.");
     }
     else
       sendFlutterResult(false, "HHRecorder: Stop Recording -> Can't stop recording as we are not capturing.");
