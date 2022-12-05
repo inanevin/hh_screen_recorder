@@ -215,7 +215,7 @@ public class ScreenCaptureService extends Service {
             m_isRecording = false;
             m_mediaRecorder.stop();
 
-            Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.frogmind.hypehype.hh_screen_recorder", m_outputFile);
+            Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.frogmind.hypehype.hh_screen_recorder.provider", m_outputFile);
 
             Intent send = new Intent(Intent.ACTION_SEND);
             send.putExtra(Intent.EXTRA_STREAM, fileUri);
@@ -293,8 +293,8 @@ public class ScreenCaptureService extends Service {
                 {
                     File f = HhScreenRecorderPlugin._instance.getActivity().getCacheDir();
                     // f.mkdirs();
-                    // m_directory =  HhScreenRecorderPlugin._instance.getActivity().getCacheDir().getAbsolutePath();
-                    m_directory =  HhScreenRecorderPlugin._instance.getActivity().getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath();
+                    m_directory =  HhScreenRecorderPlugin._instance.getActivity().getCacheDir().getAbsolutePath();
+                   // m_directory =  HhScreenRecorderPlugin._instance.getActivity().getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath();
                 }
                 else
                 {
