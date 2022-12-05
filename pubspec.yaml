@@ -1,7 +1,7 @@
 name: hh_screen_recorder
-description: A new Flutter plugin project.
-version: 0.0.1
-homepage:
+description: -desc-
+version: 0.0.5
+homepage: https://github.com/inanevin/hh_screen_recorder
 
 environment:
   sdk: '>=2.18.4 <3.0.0'
@@ -35,7 +35,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.hh_screen_recorder
+        package: com.frogmind.hypehype.hh_screen_recorder
         pluginClass: HhScreenRecorderPlugin
       ios:
         pluginClass: HhScreenRecorderPlugin
