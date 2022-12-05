@@ -74,8 +74,8 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   private int m_width = 0;
   private int m_height = 0;
   private int m_density = 0;
-  public static final String MIME_TYPE_DEF = "video/mp4";
-  public static final String MIME_TYPE_FB = "video/3gpp";
+  public static final String[] MIME_TYPE_MP4= new String[]{"video/mp4", "video/mp4v", "video/mp4v-es"};
+  public static final String MIME_TYPE_FALLBACK = "video/3gpp";
   public static String SELECTED_MIME_TYPE = "";
   private boolean m_isRecordingSupported = false;
 
@@ -141,8 +141,19 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   private void checkIfRecordingIsSupported()
   {
-    boolean mp4Supp = m_codecUtility.isMimeTypeSupported(MIME_TYPE_DEF);
-    boolean tgpSupp = m_codecUtility.isMimeTypeSupported(MIME_TYPE_FB);
+    boolean mp4Supp = false;
+    boolean tgpSupp = m_codecUtility.isMimeTypeSupported(MIME_TYPE_FALLBACK);
+    String supportedMp4Mime = "";
+
+    for(int i = 0; i < MIME_TYPE_MP4.length; i++)
+    {
+      if(m_codecUtility.isMimeTypeSupported(MIME_TYPE_MP4[i]))
+      {
+        supportedMp4Mime = MIME_TYPE_MP4[i];
+        mp4Supp = true;
+        break;
+      }
+    }
 
     if(!mp4Supp && !tgpSupp)
     {
@@ -150,11 +161,10 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
       return;
     }
 
-    System.out.print("HHRecorder: mp4 supp ? & 3gp sup?" + mp4Supp + tgpSupp);
-    SELECTED_MIME_TYPE = mp4Supp ? MIME_TYPE_DEF : MIME_TYPE_FB;
+    SELECTED_MIME_TYPE = mp4Supp ? supportedMp4Mime : MIME_TYPE_FALLBACK;
 
-    boolean mp4SizeSupp = m_codecUtility.isSizeSupported(m_width, m_height, MIME_TYPE_DEF);
-    boolean tgpSizeSupp = m_codecUtility.isSizeSupported(m_width, m_height, MIME_TYPE_FB);
+    boolean mp4SizeSupp = mp4Supp ? m_codecUtility.isSizeSupported(m_width, m_height, supportedMp4Mime) : false;
+    boolean tgpSizeSupp = m_codecUtility.isSizeSupported(m_width, m_height, MIME_TYPE_FALLBACK);
 
     if(!mp4SizeSupp && !tgpSizeSupp)
     {

@@ -8,6 +8,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -26,6 +27,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.ResultReceiver;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -56,7 +58,8 @@ public class ScreenCaptureService extends Service {
     private String m_directory = "";
     private String m_filename = "";
     private static final String TAG = "ScreenRecordService";
-    private Uri m_uri = null;
+    private boolean m_isRecording = false;
+    private String m_mediaRecorderPath = "";
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -142,13 +145,7 @@ public class ScreenCaptureService extends Service {
             // INIT
             try{
                 initRecorder();
-            }
-            catch (IOException e)
-            {
-                HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media recorder: " + Log.getStackTraceString(e));
-                return Service.START_STICKY;
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Failed to init media recorder: " + Log.getStackTraceString(e));
                 return Service.START_STICKY;
@@ -189,6 +186,7 @@ public class ScreenCaptureService extends Service {
             try
             {
                 m_mediaRecorder.start();
+                m_isRecording = true;
                 HhScreenRecorderPlugin._instance.onStartedCapture();
             }
             catch (Exception e)
@@ -209,6 +207,18 @@ public class ScreenCaptureService extends Service {
 
     @Override
     public void onDestroy() {
+
+        if(m_isRecording)
+        {
+            m_isRecording = false;
+            m_mediaRecorder.stop();
+            ContentValues values = new ContentValues(3);
+            values.put(MediaStore.Video.Media.TITLE, "My video title");
+            values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+            values.put(MediaStore.Video.Media.DATA, m_mediaRecorderPath);
+            getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+        }
+
         HhScreenRecorderPlugin._instance.onServiceDestroyed();
         stopForeground(true);
         stopSelf();
@@ -246,33 +256,18 @@ public class ScreenCaptureService extends Service {
         }
 
         m_mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        System.out.print("HHRecorder: " + HhScreenRecorderPlugin.SELECTED_MIME_TYPE);
-
-        if(CodecUtility._instance.isMimeTypeSupported("video/mp4"))
-            System.out.print("HHRecorder: MP4 Supported");
-        if (CodecUtility._instance.isMimeTypeSupported("video/mp4v"))
-            System.out.print("HHRecorder: MP4V Supported");
-
-        HashMap<String, String> aq = CodecUtility._instance.getSupportedVideoMimeTypes();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            aq.forEach((key, value) -> {
-                System.out.println("HHRecorder: KEY " + key + " VAL: " + value);
-            });
-        }
-        else
-            System.out.println("HHRecorder: Sansimi sikim");
+        System.out.println("HHRecorder: Selecting encoder, target mime type: " + HhScreenRecorderPlugin.SELECTED_MIME_TYPE);
 
         String outputExtension = "";
-        if(HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_DEF))
-        {
-            m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            outputExtension = ".mp4";
-        }
-        else
+        if(HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK))
         {
             m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             outputExtension = ".3gp";
+        }
+        else
+        {
+            m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            outputExtension = ".mp4";
         }
 
         m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
@@ -301,13 +296,15 @@ public class ScreenCaptureService extends Service {
                 }
                 //m_directory = getExternalCacheDir().getAbsolutePath();
             }
-            String filePath = m_directory + File.separator + m_filename + "_" + getDateAndTime() + outputExtension;
 
+            String filePath = m_directory + File.separator + m_filename + "_" + getDateAndTime() + outputExtension;
             System.out.println("HHRecorder: Setting output file: " + filePath);
+            m_mediaRecorderPath = filePath;
             m_mediaRecorder.setOutputFile(filePath);
         }
         catch (Exception e) {
             System.out.println("HHRecorder: Media Recorder Set output file failed");
+            throw new IOException();
         }
 
         m_mediaRecorder.prepare();
