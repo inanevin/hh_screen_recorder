@@ -57,7 +57,6 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   private MediaProjectionManager m_projectionManager;
   private MediaProjection m_captureProjection;
   private VirtualDisplay m_virtualDisplay;
-  private DisplayMetrics m_metrics;
   private MediaRecorder m_mediaRecorder;
   private boolean printLn = true;
 
@@ -71,6 +70,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   public static HhScreenRecorderPlugin _instance;
   private boolean m_canResumePause = false;
   private boolean m_awatingFlutterResult = false;
+  private CodecUtility m_codecUtility = null;
 
   enum RecordingState
   {
@@ -84,8 +84,6 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
     m_activity = binding.getActivity();
-    m_metrics = new DisplayMetrics();
-    m_activity.getWindowManager().getDefaultDisplay().getMetrics(m_metrics);
     binding.addActivityResultListener(this);
   }
 
@@ -121,6 +119,9 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     m_mediaRecorder = new MediaRecorder();
     _instance = this;
     m_canResumePause = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+    m_codecUtility = new CodecUtility();
+    m_codecUtility.setContext(m_context);
+    m_codecUtility._instance = m_codecUtility;
   }
 
   @Override
@@ -264,9 +265,6 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
       service.putExtra("filename", m_filename);
       service.putExtra("directory", m_directory);
       service.putExtra("recordAudio", m_recordAudio);
-      service.putExtra("width", m_metrics.widthPixels);
-      service.putExtra("height", m_metrics.heightPixels);
-      service.putExtra("density", m_metrics.densityDpi);
       service.putExtra("mediaProjCode", code);
       service.putExtra("mediaProjData", data);
 

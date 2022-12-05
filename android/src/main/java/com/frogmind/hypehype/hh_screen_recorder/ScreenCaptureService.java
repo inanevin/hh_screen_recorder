@@ -121,8 +121,10 @@ public class ScreenCaptureService extends Service {
             }
 
             // Retrieve params
-            m_screenWidth = intent.getIntExtra("width", 0);
-            m_screenHeight = intent.getIntExtra("height", 0);
+            m_screenWidth = CodecUtility._instance.getMaxSupportedWidth();
+            m_screenHeight = CodecUtility._instance.getMaxSupportedHeight();
+
+
             if(m_screenWidth == 0 || m_screenHeight == 0)
             {
                 HhScreenRecorderPlugin._instance.onFailedToStartCapture( "Screen width or height is zero!");
@@ -246,7 +248,7 @@ public class ScreenCaptureService extends Service {
         m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
 
-        m_mediaRecorder.setVideoSize(400, 600);
+        m_mediaRecorder.setVideoSize(m_screenWidth, m_screenHeight);
 
         m_mediaRecorder.setVideoEncodingBitRate(12000000);
         m_mediaRecorder.setVideoFrameRate(30);
