@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
+import android.media.MediaCodecInfo;
 import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
@@ -244,15 +245,29 @@ public class ScreenCaptureService extends Service {
         }
 
         m_mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+
+        String outputExtension = "";
+        if(HhScreenRecorderPlugin.SELECTED_MIME_TYPE == HhScreenRecorderPlugin.MIME_TYPE_DEF)
+        {
+            m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            outputExtension = ".mp4";
+        }
+        else
+        {
+            m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            outputExtension = ".3gp";
+        }
+
+        MediaCodecInfo info = CodecUtility._instance.selectVideoCodec(HhScreenRecorderPlugin.SELECTED_MIME_TYPE);
+        System.out.println("HHRecorder: CODEC: " + info.getName());
+
         m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
 
         m_mediaRecorder.setVideoSize(m_screenWidth, m_screenHeight);
 
-        m_mediaRecorder.setVideoEncodingBitRate(12000000);
-        m_mediaRecorder.setVideoFrameRate(30);
-
-        System.out.println("HHRecorder: Initing recorder, width: " + m_screenWidth + " height: " + m_screenHeight);
+        //m_mediaRecorder.setVideoEncodingBitRate(12000000);
+        m_mediaRecorder.setVideoEncodingBitRate(5 * m_screenWidth * m_screenHeight);
+        m_mediaRecorder.setVideoFrameRate(60);
 
         //ContentResolver contentResolver = getContentResolver();
         //FileDescriptor inputPFD = Objects.requireNonNull(contentResolver.openFileDescriptor(m_uri, "rw")).getFileDescriptor();
@@ -274,7 +289,7 @@ public class ScreenCaptureService extends Service {
                 }
                 //m_directory = getExternalCacheDir().getAbsolutePath();
             }
-            String filePath = m_directory + File.separator + m_filename + "_" + getDateAndTime() + ".mp4";
+            String filePath = m_directory + File.separator + m_filename + "_" + getDateAndTime() + outputExtension;
 
             System.out.println("HHRecorder: Setting output file: " + filePath);
             m_mediaRecorder.setOutputFile(filePath);

@@ -74,8 +74,10 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   private int m_width = 0;
   private int m_height = 0;
   private int m_density = 0;
-  private final String MIME_TYPE_DEF = "";
-  private final String MIME_TYPE_FB = "";
+  public static final String MIME_TYPE_DEF = "video/mp4";
+  public static final String MIME_TYPE_FB = "video/3gpp";
+  public static String SELECTED_MIME_TYPE = "";
+  private boolean m_isRecordingSupported = false;
 
   enum RecordingState
   {
@@ -133,6 +135,33 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     WindowManager wm = (WindowManager) m_context.getSystemService(WINDOW_SERVICE);
     wm.getDefaultDisplay().getRealMetrics(displayMetrics);
     m_density = displayMetrics.densityDpi;
+    checkIfRecordingIsSupported();
+
+  }
+
+  private void checkIfRecordingIsSupported()
+  {
+    boolean mp4Supp = m_codecUtility.isMimeTypeSupported(MIME_TYPE_DEF);
+    boolean tgpSupp = m_codecUtility.isMimeTypeSupported(MIME_TYPE_FB);
+
+    if(!mp4Supp && !tgpSupp)
+    {
+      m_isRecordingSupported = false;
+      return;
+    }
+
+    SELECTED_MIME_TYPE = mp4Supp ? MIME_TYPE_DEF : MIME_TYPE_FB;
+
+    boolean mp4SizeSupp = m_codecUtility.isSizeSupported(m_width, m_height, MIME_TYPE_DEF);
+    boolean tgpSizeSupp = m_codecUtility.isSizeSupported(m_width, m_height, MIME_TYPE_FB);
+
+    if(!mp4SizeSupp && !tgpSizeSupp)
+    {
+      m_isRecordingSupported = false;
+      return;
+    }
+
+    m_isRecordingSupported = true;
   }
 
   @Override
@@ -172,7 +201,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     }
     else if(call.method.equals("isRecordingSupported"))
     {
-       // m_codecUtility.isMimeTypeSupported()
+      m_flutterResult.success(m_isRecordingSupported);
     }
     else {
       result.notImplemented();
