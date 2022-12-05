@@ -216,6 +216,7 @@ public class ScreenCaptureService extends Service {
             Intent send = new Intent(Intent.ACTION_SEND);
             send.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(m_outputFile));
             send.putExtra(Intent.EXTRA_SUBJECT, "Sharing recording...");
+            send.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             HhScreenRecorderPlugin._instance.getActivity().startActivity(Intent.createChooser(send, "Send Recording"));
         }
 
