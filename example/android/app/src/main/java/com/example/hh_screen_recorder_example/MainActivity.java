@@ -1,4 +1,4 @@
-package com.frogmind.hypehype.hh_screen_recorder_example;
+package com.example.hh_screen_recorder_example;
 
 import io.flutter.embedding.android.FlutterActivity;
 

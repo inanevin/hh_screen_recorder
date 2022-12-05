@@ -1,8 +1,7 @@
 name: hh_screen_recorder
-description: hh screen recorder.
-version: 0.0.3
+description: A new Flutter plugin project.
+version: 0.0.1
 homepage:
-repository: https://github.com/inanevin/hh_screen_recorder
 
 environment:
   sdk: '>=2.18.4 <3.0.0'
@@ -36,10 +35,14 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.frogmind.hypehype.hh_screen_recorder
+        package: com.example.hh_screen_recorder
         pluginClass: HhScreenRecorderPlugin
       ios:
         pluginClass: HhScreenRecorderPlugin
+      macos:
+        pluginClass: HhScreenRecorderPlugin
+      windows:
+        pluginClass: HhScreenRecorderPluginCApi
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

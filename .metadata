@@ -21,6 +21,12 @@ migration:
     - platform: ios
       create_revision: 699bee6b35734df631d79ce1ce09b52e3e1428f4
       base_revision: 699bee6b35734df631d79ce1ce09b52e3e1428f4
+    - platform: macos
+      create_revision: 699bee6b35734df631d79ce1ce09b52e3e1428f4
+      base_revision: 699bee6b35734df631d79ce1ce09b52e3e1428f4
+    - platform: windows
+      create_revision: 699bee6b35734df631d79ce1ce09b52e3e1428f4
+      base_revision: 699bee6b35734df631d79ce1ce09b52e3e1428f4
 
   # User provided section
 

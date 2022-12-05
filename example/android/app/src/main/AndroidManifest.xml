@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.frogmind.hypehype.hh_screen_recorder_example">
+    package="com.example.hh_screen_recorder_example">
    <application
         android:label="hh_screen_recorder_example"
-        android:name="hh"
+        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
