@@ -38,6 +38,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class ScreenCaptureService extends Service {
@@ -246,6 +247,22 @@ public class ScreenCaptureService extends Service {
 
         m_mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         System.out.print("HHRecorder: " + HhScreenRecorderPlugin.SELECTED_MIME_TYPE);
+
+        if(CodecUtility._instance.isMimeTypeSupported("video/mp4"))
+            System.out.print("HHRecorder: MP4 Supported");
+        if (CodecUtility._instance.isMimeTypeSupported("video/mp4v"))
+            System.out.print("HHRecorder: MP4V Supported");
+
+        HashMap<String, String> aq = CodecUtility._instance.getSupportedVideoMimeTypes();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            aq.forEach((key, value) -> {
+                System.out.println("HHRecorder: KEY " + key + " VAL: " + value);
+            });
+        }
+        else
+            System.out.println("HHRecorder: Sansimi sikim");
+
         String outputExtension = "";
         if(HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_DEF))
         {
