@@ -32,6 +32,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -213,8 +214,11 @@ public class ScreenCaptureService extends Service {
         {
             m_isRecording = false;
             m_mediaRecorder.stop();
+
+            Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.example.myapp.fileprovider", m_outputFile);
+
             Intent send = new Intent(Intent.ACTION_SEND);
-            send.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(m_outputFile));
+            send.putExtra(Intent.EXTRA_STREAM, fileUri);
             send.putExtra(Intent.EXTRA_SUBJECT, "Sharing recording...");
             send.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             HhScreenRecorderPlugin._instance.getActivity().startActivity(Intent.createChooser(send, "Send Recording"));
