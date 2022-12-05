@@ -150,6 +150,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
       return;
     }
 
+    System.out.print("HHRecorder: mp4 supp ? & 3gp sup?" + mp4Supp + tgpSupp);
     SELECTED_MIME_TYPE = mp4Supp ? MIME_TYPE_DEF : MIME_TYPE_FB;
 
     boolean mp4SizeSupp = m_codecUtility.isSizeSupported(m_width, m_height, MIME_TYPE_DEF);

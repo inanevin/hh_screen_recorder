@@ -245,7 +245,7 @@ public class ScreenCaptureService extends Service {
         }
 
         m_mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-
+        System.out.print("HHRecorder: " + HhScreenRecorderPlugin.SELECTED_MIME_TYPE);
         String outputExtension = "";
         if(HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_DEF))
         {
