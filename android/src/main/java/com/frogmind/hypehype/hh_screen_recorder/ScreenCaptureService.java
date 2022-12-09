@@ -319,7 +319,7 @@ public class ScreenCaptureService extends Service {
                     // f.mkdirs();
                    // m_directory =  HhScreenRecorderPlugin._instance.getActivity().getCacheDir().getAbsolutePath();
                    // m_directory =  HhScreenRecorderPlugin._instance.getActivity().getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath();
-                    m_directory = HhScreenRecorderPlugin._instance.getActivity().getApplicationContext().getFilesDir().getAbsolutePath() + "/Movies/";
+                    m_directory = HhScreenRecorderPlugin._instance.getActivity().getFilesDir().getAbsolutePath();
                 }
                 else
                 {
