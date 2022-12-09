@@ -235,6 +235,7 @@ public class ScreenCaptureService extends Service {
             values.put(MediaStore.Video.Media.DISPLAY_NAME, m_outputFilename);
             values.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype screen recording.");
             values.put(MediaStore.Video.Media.DATA, m_outputFile.getAbsolutePath());
+            values.put(MediaStore.Video.Media.SIZE, 300);
 
             System.out.println("HHRecorder: Saving MediaStore :" + m_outputFile.getAbsolutePath());
             // Mimetype video/mp4-es etc. are not supported in insert.
