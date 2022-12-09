@@ -224,7 +224,14 @@ public class ScreenCaptureService extends Service {
             // Specify the video's title and description
             values.put(MediaStore.Video.Media.TITLE, m_outputFilename);
             values.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype screen recording.");
+            values.put(MediaStore.Video.Media.DATA, m_outputFile.getAbsolutePath());
+            values.put(MediaStore.Video.Media.MIME_TYPE, HhScreenRecorderPlugin.SELECTED_MIME_TYPE);
             Uri videoInsertUri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+
+            // Save the video to the user's gallery app
+            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            mediaScanIntent.setData(videoInsertUri);
+            sendBroadcast(mediaScanIntent);
 
             Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.frogmind.hypehype.hh_screen_recorder.provider", m_outputFile);
 
