@@ -60,7 +60,6 @@ public class ScreenCaptureService extends Service {
     private String m_filename = "";
     private static final String TAG = "ScreenRecordService";
     private boolean m_isRecording = false;
-    private String m_mediaRecorderPath = "";
     private File m_outputFile = null;
     private String m_outputFilename = "";
 
@@ -216,20 +215,20 @@ public class ScreenCaptureService extends Service {
             m_isRecording = false;
             m_mediaRecorder.stop();
 
-            ContentResolver contentResolver = HhScreenRecorderPlugin._instance.getActivity().getApplicationContext().getContentResolver();
+        //    ContentResolver contentResolver = HhScreenRecorderPlugin._instance.getActivity().getApplicationContext().getContentResolver();
 
             // Create a new ContentValues object
-            ContentValues values = new ContentValues();
+          //  ContentValues values = new ContentValues();
 
             // Specify the video's title and description
-            values.put(MediaStore.Video.Media.TITLE, m_outputFilename);
-            values.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype screen recording.");
-            values.put(MediaStore.Video.Media.DATA, m_outputFile.getAbsolutePath());
+         //   values.put(MediaStore.Video.Media.TITLE, m_outputFilename);
+        //    values.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype screen recording.");
+         //   values.put(MediaStore.Video.Media.DATA, m_outputFile.getAbsolutePath());
 
             // Mimetype video/mp4-es etc. are not supported in insert.
-            String mimeType = HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK) ? "video/3gpp" : "video/mp4";
-            values.put(MediaStore.Video.Media.MIME_TYPE, mimeType);
-            Uri videoInsertUri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+         //   String mimeType = HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK) ? "video/3gpp" : "video/mp4";
+         //   values.put(MediaStore.Video.Media.MIME_TYPE, mimeType);
+          //  Uri videoInsertUri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
 
             // Share intent
             Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.frogmind.hypehype.hh_screen_recorder.provider", m_outputFile);
@@ -240,9 +239,9 @@ public class ScreenCaptureService extends Service {
             HhScreenRecorderPlugin._instance.getActivity().startActivity(Intent.createChooser(send, "Send Recording"));
 
             // Save the video to the user's gallery app
-            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            mediaScanIntent.setData(videoInsertUri);
-            sendBroadcast(mediaScanIntent);
+           // Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+           // mediaScanIntent.setData(videoInsertUri);
+           // sendBroadcast(mediaScanIntent);
 
         }
 
@@ -315,20 +314,18 @@ public class ScreenCaptureService extends Service {
                 {
                     File f = HhScreenRecorderPlugin._instance.getActivity().getCacheDir();
                     // f.mkdirs();
-                    m_directory =  HhScreenRecorderPlugin._instance.getActivity().getCacheDir().getAbsolutePath();
-                   // m_directory =  HhScreenRecorderPlugin._instance.getActivity().getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath();
+                   // m_directory =  HhScreenRecorderPlugin._instance.getActivity().getCacheDir().getAbsolutePath();
+                    m_directory =  HhScreenRecorderPlugin._instance.getActivity().getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath();
                 }
                 else
                 {
                     m_directory = Environment.getExternalStorageDirectory().toString();
                 }
-                //m_directory = getExternalCacheDir().getAbsolutePath();
             }
 
             m_outputFilename = m_filename + "_" + getDateAndTime();
             String filePath = m_directory + File.separator + m_outputFilename + outputExtension;
             System.out.println("HHRecorder: Setting output file: " + filePath);
-            m_mediaRecorderPath = filePath;
             m_mediaRecorder.setOutputFile(filePath);
             m_outputFile = new File(filePath);
         }
