@@ -225,22 +225,25 @@ public class ScreenCaptureService extends Service {
             values.put(MediaStore.Video.Media.TITLE, m_outputFilename);
             values.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype screen recording.");
             values.put(MediaStore.Video.Media.DATA, m_outputFile.getAbsolutePath());
-            values.put(MediaStore.Video.Media.MIME_TYPE, HhScreenRecorderPlugin.SELECTED_MIME_TYPE);
+
+            // Mimetype video/mp4-es etc. are not supported in insert.
+            String mimeType = HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK) ? "video/3gpp" : "video/mp4";
+            values.put(MediaStore.Video.Media.MIME_TYPE, mimeType);
             Uri videoInsertUri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+
+            // Share intent
+            Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.frogmind.hypehype.hh_screen_recorder.provider", m_outputFile);
+            Intent send = new Intent(Intent.ACTION_SEND);
+            send.putExtra(Intent.EXTRA_STREAM, fileUri);
+            send.setType("video/*");
+            send.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            HhScreenRecorderPlugin._instance.getActivity().startActivity(Intent.createChooser(send, "Send Recording"));
 
             // Save the video to the user's gallery app
             Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             mediaScanIntent.setData(videoInsertUri);
             sendBroadcast(mediaScanIntent);
 
-            Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.frogmind.hypehype.hh_screen_recorder.provider", m_outputFile);
-
-            Intent send = new Intent(Intent.ACTION_SEND);
-            send.putExtra(Intent.EXTRA_STREAM, fileUri);
-            send.setType("video/*");
-            send.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-            HhScreenRecorderPlugin._instance.getActivity().startActivity(Intent.createChooser(send, "Send Recording"));
         }
 
         HhScreenRecorderPlugin._instance.onServiceDestroyed();
