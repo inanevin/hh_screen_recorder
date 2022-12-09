@@ -240,7 +240,7 @@ public class ScreenCaptureService extends Service {
             // Mimetype video/mp4-es etc. are not supported in insert.
             String mimeType = HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK) ? "video/3gpp" : "video/mp4";
             values.put(MediaStore.Video.Media.MIME_TYPE, mimeType);
-            Uri videoInsertUri = contentResolver.insert(MediaStore.Video.Media.INTERNAL_CONTENT_URI, values);
+            Uri videoInsertUri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
 
             // Save the video to the user's gallery app
             Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -317,8 +317,8 @@ public class ScreenCaptureService extends Service {
                 {
                     File f = HhScreenRecorderPlugin._instance.getActivity().getCacheDir();
                     // f.mkdirs();
-                    m_directory =  HhScreenRecorderPlugin._instance.getActivity().getCacheDir().getAbsolutePath();
-                    // m_directory =  HhScreenRecorderPlugin._instance.getActivity().getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath();
+                    //m_directory =  HhScreenRecorderPlugin._instance.getActivity().getCacheDir().getAbsolutePath();
+                     m_directory =  HhScreenRecorderPlugin._instance.getActivity().getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath();
                 }
                 else
                 {
