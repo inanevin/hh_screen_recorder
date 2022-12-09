@@ -62,6 +62,7 @@ public class ScreenCaptureService extends Service {
     private boolean m_isRecording = false;
     private String m_mediaRecorderPath = "";
     private File m_outputFile = null;
+    private String m_outputFilename = "";
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -215,6 +216,16 @@ public class ScreenCaptureService extends Service {
             m_isRecording = false;
             m_mediaRecorder.stop();
 
+            ContentResolver contentResolver = HhScreenRecorderPlugin._instance.getActivity().getApplicationContext().getContentResolver();
+
+            // Create a new ContentValues object
+            ContentValues values = new ContentValues();
+
+            // Specify the video's title and description
+            values.put(MediaStore.Video.Media.TITLE, m_outputFilename);
+            values.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype screen recording.");
+            Uri videoInsertUri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+
             Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.frogmind.hypehype.hh_screen_recorder.provider", m_outputFile);
 
             Intent send = new Intent(Intent.ACTION_SEND);
@@ -304,7 +315,8 @@ public class ScreenCaptureService extends Service {
                 //m_directory = getExternalCacheDir().getAbsolutePath();
             }
 
-            String filePath = m_directory + File.separator + m_filename + "_" + getDateAndTime() + outputExtension;
+            m_outputFilename = m_filename + "_" + getDateAndTime();
+            String filePath = m_directory + File.separator + m_outputFilename + outputExtension;
             System.out.println("HHRecorder: Setting output file: " + filePath);
             m_mediaRecorderPath = filePath;
             m_mediaRecorder.setOutputFile(filePath);
