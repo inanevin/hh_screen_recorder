@@ -431,13 +431,14 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     else
       outputExtension = ".mp4";
 
-    m_finalFullPath += m_filename + "_" + getDateAndTime() + outputExtension;
+    String finalFileName = m_filename + "_" + getDateAndTime();
+    m_finalFullPath += finalFileName + outputExtension;
     createFolder();
 
     String mimeType = HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK) ? "video/3gpp" : "video/mp4";
     m_contentValues = new ContentValues();
-    m_contentValues.put(MediaStore.Video.Media.TITLE, m_filename);
-    m_contentValues.put(MediaStore.Video.Media.DISPLAY_NAME, m_filename);
+    m_contentValues.put(MediaStore.Video.Media.TITLE, finalFileName);
+    m_contentValues.put(MediaStore.Video.Media.DISPLAY_NAME, finalFileName);
     m_contentValues.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype Screen Recorder.");
     m_contentValues.put(MediaStore.Video.Media.MIME_TYPE, mimeType);
 
