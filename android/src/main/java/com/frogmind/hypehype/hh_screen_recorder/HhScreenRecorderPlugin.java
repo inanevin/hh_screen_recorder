@@ -90,6 +90,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   private boolean m_isRecordingSupported = false;
   private ContentValues m_contentValues = null;
   private String m_finalFullPath = "";
+  private Uri m_uri = null;
 
   enum RecordingState
   {
@@ -410,10 +411,11 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     // Stopped recording
 
     // Share intent
-    File file = new File(m_finalFullPath);
-    Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.frogmind.hypehype.hh_screen_recorder.provider", file);
+
+    //File file = new File(m_finalFullPath);
+    //Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.frogmind.hypehype.hh_screen_recorder.provider", file);
     Intent send = new Intent(Intent.ACTION_SEND);
-    send.putExtra(Intent.EXTRA_STREAM, fileUri);
+    send.putExtra(Intent.EXTRA_STREAM, m_uri);
     send.setType("video/*");
     send.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     HhScreenRecorderPlugin._instance.getActivity().startActivity(Intent.createChooser(send, "Send Recording"));
@@ -445,12 +447,12 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
       m_contentValues.put(MediaStore.Video.Media.DATA, m_finalFullPath);
 
     ContentResolver resolver = getActivity().getApplicationContext().getContentResolver();
-    Uri uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, m_contentValues);
+    m_uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, m_contentValues);
 
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
     {
-      service.putExtra("uri", uri.toString());
-      m_finalFullPath = uri.getPath();
+      service.putExtra("uri", m_uri.toString());
+      m_finalFullPath = m_uri.getPath();
     }
     else
     {
