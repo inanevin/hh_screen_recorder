@@ -56,18 +56,15 @@ public class ScreenCaptureService extends Service {
     private int m_mediaProjCode = 0;
     private boolean m_recordAudio = false;
     private Intent m_mediaProjData;
-    private String m_directory = "";
-    private String m_filename = "";
+    private String m_fullPath = "";
     private static final String TAG = "ScreenRecordService";
     private boolean m_isRecording = false;
-    private File m_outputFile = null;
-    private String m_outputFilename = "";
+    private Uri m_uri = null;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         System.out.println("HHRecorder: start command received successfully.");
-
 
         if(intent != null && intent.getAction() != null)
         {
@@ -140,9 +137,10 @@ public class ScreenCaptureService extends Service {
             m_mediaProjCode = intent.getIntExtra("mediaProjCode", -1);
             m_mediaProjData = intent.getParcelableExtra("mediaProjData");
             m_recordAudio = intent.getBooleanExtra("recordAudio", false);
+            m_uri = intent.hasExtra("uri") ? Uri.parse(intent.getStringExtra("uri")): null;
 
-            m_filename = intent.getStringExtra("filename");
-            m_directory = intent.getStringExtra("directory");
+            if(m_uri == null)
+                m_fullPath = intent.getStringExtra("fullpath");
 
             // INIT
             try{
@@ -215,17 +213,7 @@ public class ScreenCaptureService extends Service {
             m_isRecording = false;
             m_mediaRecorder.stop();
 
-
-
-            // Share intent
-            Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.frogmind.hypehype.hh_screen_recorder.provider", m_outputFile);
-            Intent send = new Intent(Intent.ACTION_SEND);
-            send.putExtra(Intent.EXTRA_STREAM, fileUri);
-            send.setType("video/*");
-            send.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            HhScreenRecorderPlugin._instance.getActivity().startActivity(Intent.createChooser(send, "Send Recording"));
-
-            //ContentResolver contentResolver = HhScreenRecorderPlugin._instance.getActivity().getApplicationContext().getContentResolver();
+           // ContentResolver contentResolver = HhScreenRecorderPlugin._instance.getActivity().getApplicationContext().getContentResolver();
 
             // Create a new ContentValues object
             //ContentValues values = new ContentValues();
@@ -235,8 +223,9 @@ public class ScreenCaptureService extends Service {
             //values.put(MediaStore.Video.Media.DISPLAY_NAME, m_outputFilename);
             //values.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype Screen Recorder.");
             //values.put(MediaStore.Video.Media.DATA, m_outputFile.getAbsolutePath());
+            //values.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/" + m_folderName);
 
-            //System.out.println("HHRecorder: Saving MediaStore :" + m_outputFile.getAbsolutePath());
+            // System.out.println("HHRecorder: Saving MediaStore :" + m_outputFile.getAbsolutePath());
             // Mimetype video/mp4-es etc. are not supported in insert.
             //String mimeType = HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK) ? "video/3gpp" : "video/mp4";
             //values.put(MediaStore.Video.Media.MIME_TYPE, mimeType);
@@ -287,17 +276,10 @@ public class ScreenCaptureService extends Service {
         m_mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         System.out.println("HHRecorder: Selecting encoder, target mime type: " + HhScreenRecorderPlugin.SELECTED_MIME_TYPE);
 
-        String outputExtension = "";
         if(HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK))
-        {
             m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            outputExtension = ".3gp";
-        }
         else
-        {
             m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            outputExtension = ".mp4";
-        }
 
         m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         m_mediaRecorder.setVideoSize(m_screenWidth, m_screenHeight);
@@ -305,36 +287,19 @@ public class ScreenCaptureService extends Service {
         m_mediaRecorder.setVideoEncodingBitRate(5 * m_screenWidth * m_screenHeight);
         m_mediaRecorder.setVideoFrameRate(60);
 
-        //ContentResolver contentResolver = getContentResolver();
-        //FileDescriptor inputPFD = Objects.requireNonNull(contentResolver.openFileDescriptor(m_uri, "rw")).getFileDescriptor();
-
-        try
-        {
-            if(m_directory == null)
-            {
-                //  m_directory = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1)
-                {
-                    File f = HhScreenRecorderPlugin._instance.getActivity().getCacheDir();
-                    // f.mkdirs();
-                    m_directory =  HhScreenRecorderPlugin._instance.getActivity().getCacheDir().getAbsolutePath();
-                     // m_directory =  HhScreenRecorderPlugin._instance.getActivity().getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath();
-                }
-                else
-                {
-                    m_directory = Environment.getExternalStorageDirectory().toString();
-                }
+        if (m_uri != null) {
+            try {
+                ContentResolver contentResolver = getContentResolver();
+                FileDescriptor inputPFD = Objects.requireNonNull(contentResolver.openFileDescriptor(m_uri, "rw")).getFileDescriptor();
+                m_mediaRecorder.setOutputFile(inputPFD);
+                System.out.println("HHRecorder: Setting output path (from uri): " + m_uri.toString());
+            } catch (Exception e) {
+                System.out.println("HHRecorder: Media Recorder Set output file failed");
+                throw new IOException();
             }
-
-            m_outputFilename = m_filename + "_" + getDateAndTime();
-            String filePath = m_directory + File.separator + m_outputFilename + outputExtension;
-            System.out.println("HHRecorder: Setting output file: " + filePath);
-            m_mediaRecorder.setOutputFile(filePath);
-            m_outputFile = new File(filePath);
-        }
-        catch (Exception e) {
-            System.out.println("HHRecorder: Media Recorder Set output file failed");
-            throw new IOException();
+        }else{
+            m_mediaRecorder.setOutputFile(m_fullPath);
+            System.out.println("HHRecorder: Setting output path: " + m_fullPath);
         }
 
         m_mediaRecorder.prepare();
@@ -350,11 +315,4 @@ public class ScreenCaptureService extends Service {
         m_virtualDisplay = m_mediaProjection.createVirtualDisplay(TAG, m_screenWidth, m_screenHeight, m_screenDensity, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, m_mediaRecorder.getSurface(), null, null);
     }
 
-    private String getDateAndTime(){
-        @SuppressLint("SimpleDateFormat") DateFormat dfDate = new SimpleDateFormat("yyyyMMdd");
-        String date=dfDate.format(Calendar.getInstance().getTime());
-        @SuppressLint("SimpleDateFormat") DateFormat dfTime = new SimpleDateFormat("HHmm");
-        String time = dfTime.format(Calendar.getInstance().getTime());
-        return date + "-" + time;
-    }
 }

@@ -2,12 +2,15 @@ package com.frogmind.hypehype.hh_screen_recorder;
 
 import static android.content.Context.WINDOW_SERVICE;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
@@ -16,11 +19,14 @@ import android.hardware.display.VirtualDisplay;
 import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.ResultReceiver;
+import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Surface;
@@ -30,6 +36,7 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.FileProvider;
 
 import org.json.JSONObject;
 
@@ -42,7 +49,11 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.plugin.common.PluginRegistry;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,12 +69,11 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   private Context m_context;
   private Activity m_activity;
   private MediaProjectionManager m_projectionManager;
-  private boolean printLn = true;
 
 
   private String m_filename = "";
-  private String m_directory = "";
   private boolean m_recordAudio = false;
+  private String m_foldername = "";
 
   private static final int SCREEN_RECORD_REQUEST_CODE = 777;
   private Intent service;
@@ -78,6 +88,8 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   public static final String MIME_TYPE_FALLBACK = "video/3gpp";
   public static String SELECTED_MIME_TYPE = "";
   private boolean m_isRecordingSupported = false;
+  private ContentValues m_contentValues = null;
+  private String m_finalFullPath = "";
 
   enum RecordingState
   {
@@ -127,7 +139,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     m_canResumePause = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
     m_codecUtility = new CodecUtility();
     m_codecUtility.setContext(m_context);
-    m_codecUtility._instance = m_codecUtility;
+    CodecUtility._instance = m_codecUtility;
     m_width = CodecUtility._instance.getMaxSupportedWidth();
     m_height = CodecUtility._instance.getMaxSupportedHeight();
 
@@ -163,7 +175,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
     SELECTED_MIME_TYPE = mp4Supp ? supportedMp4Mime : MIME_TYPE_FALLBACK;
 
-    boolean mp4SizeSupp = mp4Supp ? m_codecUtility.isSizeSupported(m_width, m_height, supportedMp4Mime) : false;
+    boolean mp4SizeSupp = mp4Supp && m_codecUtility.isSizeSupported(m_width, m_height, supportedMp4Mime);
     boolean tgpSizeSupp = m_codecUtility.isSizeSupported(m_width, m_height, MIME_TYPE_FALLBACK);
 
     if(!mp4SizeSupp && !tgpSizeSupp)
@@ -186,8 +198,8 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     {
       m_awatingFlutterResult = true;
       m_filename = call.argument("filename");
-      m_directory = call.argument("directory");
-      m_recordAudio = call.argument("recordAudio");
+      m_recordAudio = Boolean.TRUE.equals(call.argument("recordAudio"));
+      m_foldername = call.argument("foldername");
 
       startRecording();
     }
@@ -228,14 +240,11 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   {
     Map<Object, Object> dataMap = new HashMap<Object, Object>();
     dataMap.put("filename", m_filename);
-    dataMap.put("directory", m_directory);
     dataMap.put("success", success);
     dataMap.put("msg", msg);
     JSONObject jsonObj = new JSONObject(dataMap);
     m_flutterResult.success(jsonObj.toString());
-
-    if(printLn)
-      System.out.println(msg);
+    System.out.println(msg);
   }
 
   void startRecording()
@@ -247,8 +256,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
     m_activity.startActivityForResult(permissionIntent, SCREEN_RECORD_REQUEST_CODE);
 
-    if(printLn)
-      System.out.println("HHRecorder: Start Recording -> Started permission prompt.");
+    System.out.println("HHRecorder: Start Recording -> Started permission prompt.");
   }
 
   void stopRecording()
@@ -318,13 +326,14 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     {
       service = new Intent(m_context, ScreenCaptureService.class);
       service.putExtra("filename", m_filename);
-      service.putExtra("directory", m_directory);
       service.putExtra("recordAudio", m_recordAudio);
       service.putExtra("mediaProjCode", code);
       service.putExtra("mediaProjData", data);
       service.putExtra("width", m_width);
       service.putExtra("height", m_height);
       service.putExtra("density", m_density);
+      service.putExtra("foldername", m_foldername);
+      checkAddContentValues();
 
       System.out.println("HHRecorder: requesting to start the service");
 
@@ -398,8 +407,65 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   public void onServiceDestroyed()
   {
+    // Stopped recording
 
+    // Share intent
+    File file = new File(m_finalFullPath);
+    Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.frogmind.hypehype.hh_screen_recorder.provider", file);
+    Intent send = new Intent(Intent.ACTION_SEND);
+    send.putExtra(Intent.EXTRA_STREAM, fileUri);
+    send.setType("video/*");
+    send.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    HhScreenRecorderPlugin._instance.getActivity().startActivity(Intent.createChooser(send, "Send Recording"));
   }
 
+  private void checkAddContentValues()
+  {
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+    {
+      String mimeType = HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK) ? "video/3gpp" : "video/mp4";
+      m_contentValues = new ContentValues();
+      m_contentValues.put(MediaStore.Video.Media.TITLE, m_filename);
+      m_contentValues.put(MediaStore.Video.Media.DISPLAY_NAME, m_filename);
+      m_contentValues.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype Screen Recorder.");
+      m_contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/" + m_foldername);
+      m_contentValues.put(MediaStore.Video.Media.MIME_TYPE, mimeType);
+      ContentResolver resolver = getActivity().getApplicationContext().getContentResolver();
+      Uri uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, m_contentValues);
+      service.putExtra("uri", uri.toString());
+      m_finalFullPath = uri.getPath();
+    }
+    else
+    {
+      createFolder();
+      m_finalFullPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES) + "/" + m_foldername + "/";
+
+      String outputExtension = "";
+      if(HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK))
+        outputExtension = ".3gp";
+      else
+        outputExtension = ".mp4";
+
+      m_finalFullPath += m_filename + "_" + getDateAndTime() + outputExtension;
+      service.putExtra("fullpath", m_finalFullPath);
+    }
+  }
+
+  private void createFolder() {
+    File f1 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), m_foldername);
+    if (!f1.exists()) {
+      if (f1.mkdirs()) {
+        Log.i("Folder ", "created");
+      }
+    }
+  }
+
+  private String getDateAndTime(){
+    @SuppressLint("SimpleDateFormat") DateFormat dfDate = new SimpleDateFormat("yyyyMMdd");
+    String date=dfDate.format(Calendar.getInstance().getTime());
+    @SuppressLint("SimpleDateFormat") DateFormat dfTime = new SimpleDateFormat("HHmm");
+    String time = dfTime.format(Calendar.getInstance().getTime());
+    return date + "-" + time;
+  }
 
 }
