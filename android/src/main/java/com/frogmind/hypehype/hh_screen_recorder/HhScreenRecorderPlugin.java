@@ -421,38 +421,46 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   private void checkAddContentValues()
   {
+    m_finalFullPath =  getActivity().getExternalFilesDir(Environment.DIRECTORY_MOVIES).getAbsolutePath() + "/" + m_foldername + "/";
+
+    String outputExtension = "";
+    if(HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK))
+      outputExtension = ".3gp";
+    else
+      outputExtension = ".mp4";
+
+    m_finalFullPath += m_filename + "_" + getDateAndTime() + outputExtension;
+    createFolder();
+
+    String mimeType = HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK) ? "video/3gpp" : "video/mp4";
+    m_contentValues = new ContentValues();
+    m_contentValues.put(MediaStore.Video.Media.TITLE, m_filename);
+    m_contentValues.put(MediaStore.Video.Media.DISPLAY_NAME, m_filename);
+    m_contentValues.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype Screen Recorder.");
+    m_contentValues.put(MediaStore.Video.Media.MIME_TYPE, mimeType);
+
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+      m_contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/" + m_foldername);
+    else
+      m_contentValues.put(MediaStore.Video.Media.DATA, m_finalFullPath);
+
+    ContentResolver resolver = getActivity().getApplicationContext().getContentResolver();
+    Uri uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, m_contentValues);
+
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
     {
-      String mimeType = HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK) ? "video/3gpp" : "video/mp4";
-      m_contentValues = new ContentValues();
-      m_contentValues.put(MediaStore.Video.Media.TITLE, m_filename);
-      m_contentValues.put(MediaStore.Video.Media.DISPLAY_NAME, m_filename);
-      m_contentValues.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype Screen Recorder.");
-      m_contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/" + m_foldername);
-      m_contentValues.put(MediaStore.Video.Media.MIME_TYPE, mimeType);
-      ContentResolver resolver = getActivity().getApplicationContext().getContentResolver();
-      Uri uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, m_contentValues);
       service.putExtra("uri", uri.toString());
       m_finalFullPath = uri.getPath();
     }
     else
     {
-      createFolder();
-      m_finalFullPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES) + "/" + m_foldername + "/";
-
-      String outputExtension = "";
-      if(HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK))
-        outputExtension = ".3gp";
-      else
-        outputExtension = ".mp4";
-
-      m_finalFullPath += m_filename + "_" + getDateAndTime() + outputExtension;
       service.putExtra("fullpath", m_finalFullPath);
     }
   }
 
   private void createFolder() {
-    File f1 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), m_foldername);
+
+    File f1 = new File(m_finalFullPath);
     if (!f1.exists()) {
       if (f1.mkdirs()) {
         Log.i("Folder ", "created");
