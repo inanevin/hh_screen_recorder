@@ -35,7 +35,7 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
           guard let preview = preview else { print("no preview window"); return }
           preview.modalPresentationStyle = .overFullScreen
           preview.previewControllerDelegate = self
-            UIApplication.shared.delegate?.window?.rootViewController?.present(preview, animated: true)
+            UIApplication.shared.delegate?.window!.rootViewController?.present(preview, animated: true)
           self.present(preview, animated: true)
         }
         
@@ -59,6 +59,6 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
   }
 
   public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
-      UIApplication.shared.delegate?.window?.rootViewController?.dismiss(animated: true)
+      UIApplication.shared.delegate?.window!.rootViewController?.dismiss(animated: true)
     }
 }
