@@ -36,7 +36,6 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
           preview.modalPresentationStyle = .overFullScreen
           preview.previewControllerDelegate = self
             UIApplication.shared.delegate?.window??.rootViewController?.present(preview, animated: true)
-          self.present(preview, animated: true)
         }
         
     }
