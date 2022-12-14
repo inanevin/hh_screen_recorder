@@ -14,14 +14,30 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin {
     if (call.method == "startRecording")
     {
         print("HHRecorder: Start Recording")
-        startRecording()
-        result(true)
+       
+        RPScreenRecorder.shared().startRecording { err in
+          guard err == nil else {
+              print(err.debugDescription);
+              result(false)
+              return }
+            //code to display recording indicator
+            result(true)
+        }
+        
     }
     else if (call.method == "stopRecording")
     {
         print("HHRecorder: Stop Recording")
-        stopRecording()
         result(true)
+
+        RPScreenRecorder.shared().stopRecording { preview, err in
+          guard let preview = preview else { print("no preview window"); return }
+          //update recording controls
+          preview.modalPresentationStyle = .overFullScreen
+          preview.previewControllerDelegate = self
+          self.present(preview, animated: true)
+        }
+        
     }
     else if (call.method == "pauseRecording") 
     {
