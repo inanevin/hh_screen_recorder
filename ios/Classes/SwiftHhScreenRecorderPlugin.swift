@@ -56,8 +56,8 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
       result(true)
     }
   }
-  
-  func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
+
+  public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
         dismiss(animated: true)
     }
 }
