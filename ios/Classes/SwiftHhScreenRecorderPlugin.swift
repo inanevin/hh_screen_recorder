@@ -13,11 +13,13 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin {
 
     if (call.method == "startRecording")
     {
+        print("HHRecorder: Start Recording")
         startRecording()
         result(true)
     }
     else if (call.method == "stopRecording")
     {
+        print("HHRecorder: Stop Recording")
         stopRecording()
         result(true)
     }
