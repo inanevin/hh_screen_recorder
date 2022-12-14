@@ -1,8 +1,10 @@
 import Flutter
 import UIKit
 import ReplayKit
+import Photos
 
 public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewViewControllerDelegate {
+  
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "hh_screen_recorder", binaryMessenger: registrar.messenger())
     let instance = SwiftHhScreenRecorderPlugin()
@@ -20,7 +22,6 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
               print(err.debugDescription);
               result(false)
               return }
-            //code to display recording indicator
             result(true)
         }
         
@@ -32,9 +33,9 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
 
         RPScreenRecorder.shared().stopRecording { preview, err in
           guard let preview = preview else { print("no preview window"); return }
-          //update recording controls
           preview.modalPresentationStyle = .overFullScreen
           preview.previewControllerDelegate = self
+            UIApplication.shared.delegate?.window?.rootViewController?.present(preview, animated: true)
           self.present(preview, animated: true)
         }
         
@@ -58,6 +59,6 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
   }
 
   public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
-        dismiss(animated: true)
+      UIApplication.shared.delegate?.window?.rootViewController?.dismiss(animated: true)
     }
 }
