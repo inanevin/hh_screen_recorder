@@ -50,7 +50,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
                   
                   if let previewViewController = previewViewController {
                       
-                      previewViewController.modalPresentationStyle = .overFullScreen
+                     
                       previewViewController.previewControllerDelegate = self
                   }
                   
