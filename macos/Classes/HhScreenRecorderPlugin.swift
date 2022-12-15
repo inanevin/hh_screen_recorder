@@ -28,11 +28,11 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
               RPScreenRecorder.shared().startRecording { err in
                 guard err == nil else {
                     print("HHRecorder: Error starting recording: \(err.debugDescription)")
-                    result(false)
+                    result.success(false)
                     return }
                   
                   print("HHRecorder: Started recording.")
-                  result(true)
+                  result.success(true)
               }
               
           }
@@ -43,7 +43,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
           
                   if let err = err {
                       print("HHRecorder: Error stopping recording: \(err.localizedDescription)")
-                      result(false)
+                      result.success(false)
                       return
                   }
                   
@@ -57,7 +57,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
                   }
                   else
                   {
-                      result(true)
+                      result.success(true)
                   }
                   
                   
@@ -67,29 +67,29 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
           }
           else if (call.method == "pauseRecording")
           {
-              result(false)
+              result.success(false)
           }
           else if (call.method == "resumeRecording")
           {
-              result(false)
+              result.success(false)
           }
           else if (call.method == "isPauseResumeEnabled")
           {
-              result(false)
+              result.success(false)
           }
           else if (call.method == "isRecordingSupported")
           {
               // iOS 9.0+ is always supported on HH
-              result(true)
+              result.success(true)
           }
           else
           {
-              result(FlutterMethodNotImplemented)
+              result.success(FlutterMethodNotImplemented)
           }
           
       } else {
           print("HHRecorder: ReplayKit is only availab on MacOS 11+")
-          result(false)
+          result.success(false)
       }
      
   }
@@ -101,7 +101,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
         let viewController = NSApplication.shared.keyWindow!.contentViewController
         
         viewController?.dismiss(viewController: previewController)
-        flutterRes?(true)
+        flutterRes?.success(true)
         print("HHRecorder: Stopped recording")
 
       }
