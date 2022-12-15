@@ -5,7 +5,7 @@ import ReplayKit
 
 public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewViewControllerDelegate {
   
-    var flutterRes : FlutterResult?
+    var flutterRes : FlutterResult
     
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "hh_screen_recorder", binaryMessenger: registrar.messenger())
@@ -44,7 +44,7 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
           }
             
             if let err = err {
-                print("HHRecorder: Error stopping recording: \(err.debugDescription)")
+                print("HHRecorder: Error stopping recording: \(err.localizedDescription)")
                 result(false)
                 return
             }
