@@ -89,9 +89,10 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
      
   }
     
+    @available(OSX 11.0, *)
     public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
         
-        UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
+       // UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
         flutterRes?(true)
         print("HHRecorder: Stopped recording")
 
