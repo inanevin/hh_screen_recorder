@@ -15,7 +15,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-      flutterRes = result!
+      flutterRes = result
         
       if (call.method == "startRecording")
       {
