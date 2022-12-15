@@ -5,7 +5,7 @@ import ReplayKit
 public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
                                      RPPreviewViewControllerDelegate {
     
-    var flutterRes : FlutterResult?
+  var flutterRes : FlutterResult?
     
 
   public static func register(with registrar: FlutterPluginRegistrar) {
@@ -77,11 +77,16 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
       }
   }
     
-    public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
-        
-        UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
-        flutterRes?(true)
-        print("HHRecorder: Stopped recording")
+    if #available(iOS 11.0, *) {
+        public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
+            
+            UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
+            flutterRes?(true)
+            print("HHRecorder: Stopped recording")
 
-      }
+          }
+    } else {
+        // Fallback on earlier versions
+    }
+    
 }
