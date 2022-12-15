@@ -1,7 +1,7 @@
 import Flutter
 import UIKit
 import ReplayKit
-import Photos
+
 
 public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewViewControllerDelegate {
   
@@ -70,6 +70,10 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
     {
         // iOS 9.0+ is always supported on HH
         result(true)
+    }
+    else
+    {
+        result(FlutterMethodNotImplemented)
     }
   }
 
