@@ -28,7 +28,7 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
               return }
             
             print("HHRecorder: Started recording.")
-            result.success(true)
+            result(true)
         }
         
     }
@@ -39,13 +39,13 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
         RPScreenRecorder.shared().stopRecording { preview, err in
           guard let preview = preview else {
               print("HHRecorder: Error stopping recording: no preview window!");
-              result.success(false)
+              result(false)
               return
           }
             
             if let err = err {
                 print("HHRecorder: Error stopping recording: \(err.localizedDescription)")
-                result.success(false)
+                result(false)
                 return
             }
 
@@ -64,32 +64,32 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
     }
     else if (call.method == "pauseRecording") 
     {
-        result.success(false)
+        result(false)
     }
     else if (call.method == "resumeRecording") 
     {
-        result.success(false)
+        result(false)
     }
     else if (call.method == "isPauseResumeEnabled") 
     {
-        result.success(false)
+        result(false)
     }
     else if (call.method == "isRecordingSupported")
     {
         // iOS 9.0+ is always supported on HH
-        result.success(true)
+        result(true)
     }
     else
     {
-        result.success(false)
-        // result.success(FlutterMethodNotImplemented)
+        result(false)
+        // result(FlutterMethodNotImplemented)
     }
   }
 
   public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
       
       UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
-      flutterRes?.success(true)
+      flutterRes?(true)
       print("HHRecorder: Stopped recording")
 
     }
