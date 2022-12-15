@@ -55,10 +55,13 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
                       viewController?.presentAsModalWindow(previewViewController)
                       
                   }
+                  else
+                  {
+                      result(true)
+                  }
                   
                   
          
-                 result(true)
               }
               
           }
@@ -95,6 +98,9 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
     public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
         
        // UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
+        let viewController = NSApplication.shared.keyWindow!.contentViewController
+        
+        viewController?.dismiss(viewController: previewController)
         flutterRes?(true)
         print("HHRecorder: Stopped recording")
 
