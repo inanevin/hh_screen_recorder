@@ -46,6 +46,8 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin
                       result(false)
                       return
                   }
+                  
+                  
          
                  result(true)
               }
