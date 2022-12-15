@@ -6,7 +6,8 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin
                                      {
     
     
-
+    var flutterRes : FlutterResult?
+    
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "hh_screen_recorder", binaryMessenger: registrar.messenger)
     let instance = HhScreenRecorderPlugin()
