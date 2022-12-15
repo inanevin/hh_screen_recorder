@@ -52,7 +52,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
                       previewViewController.previewControllerDelegate = self
                       let viewController = NSApplication.shared.keyWindow!.contentViewController
                       
-                      viewController.present(previewViewController, animated: true)
+                      viewController?.present(previewViewController, animated: true)
                       
                   }
                   
