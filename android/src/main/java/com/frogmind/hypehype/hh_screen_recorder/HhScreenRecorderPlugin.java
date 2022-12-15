@@ -76,6 +76,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   private String m_foldername = "";
 
   private static final int SCREEN_RECORD_REQUEST_CODE = 777;
+  private static final int SHARE_REQUEST_CODE = 888;
   private Intent service;
   public static HhScreenRecorderPlugin _instance;
   private boolean m_canResumePause = false;
@@ -264,7 +265,6 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
   {
     if(m_recordingState == RecordingState.Recording || m_recordingState == RecordingState.Paused)
     {
-      sendFlutterResult(true, "HHRecorder: Stop Recording -> Successfully stopped media recording.");
       Intent service = new Intent(m_context, ScreenCaptureService.class);
       m_context.stopService(service);
     }
@@ -314,6 +314,10 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
       }
       else
         sendFlutterResult(false, "HHRecorder: Start Recording -> Recording permission result is NOT OK, aborting.");
+    }
+    else if(requestCode == SHARE_REQUEST_CODE)
+    {
+        sendFlutterResult(true, "HHRecorder: Stop Recording -> Successfully stopped media recording.");
     }
 
     return true;
@@ -418,7 +422,9 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     send.putExtra(Intent.EXTRA_STREAM, m_uri);
     send.setType("video/*");
     send.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-    HhScreenRecorderPlugin._instance.getActivity().startActivity(Intent.createChooser(send, "Send Recording"));
+    //HhScreenRecorderPlugin._instance.getActivity().startActivity(Intent.createChooser(send, "Send Recording"));
+    HhScreenRecorderPlugin._instance.getActivity().startActivityForResult(Intent.createChooser(send, "Send Recording"),  SHARE_REQUEST_CODE);
+
   }
 
   private void checkAddContentValues()
