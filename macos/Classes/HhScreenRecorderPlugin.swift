@@ -48,9 +48,16 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
                   result(false)
                   return
               }
-            preview.modalPresentationStyle = .overFullScreen
-            preview.previewControllerDelegate = self
-              UIApplication.shared.delegate?.window??.rootViewController?.present(preview, animated: true)
+              
+              if #available(OSX 11.0, *) {
+                  preview.modalPresentationStyle = .overFullScreen
+                  preview.previewControllerDelegate = self
+                    UIApplication.shared.delegate?.window??.rootViewController?.present(preview, animated: true)
+                  
+              } else {
+                  // Fallback on earlier versions
+              }
+            
           }
           
       }
@@ -77,16 +84,12 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
       }
   }
     
-    if #available(iOS 11.0, *) {
-        public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
-            
-            UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
-            flutterRes?(true)
-            print("HHRecorder: Stopped recording")
+    @available(OSX 11.0, *)
+    public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
+        
+        UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
+        flutterRes?(true)
+        print("HHRecorder: Stopped recording")
 
-          }
-    } else {
-        // Fallback on earlier versions
-    }
-    
+      }
 }
