@@ -100,7 +100,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
        // UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
         let viewController = NSApplication.shared.keyWindow!.contentViewController
         
-        viewController?.dismiss(viewController: previewController)
+        viewController?.dismiss()
         flutterRes?(true)
         print("HHRecorder: Stopped recording")
 
