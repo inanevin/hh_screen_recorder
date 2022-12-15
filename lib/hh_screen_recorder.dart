@@ -44,33 +44,29 @@ class HhScreenRecorder {
     return HhScreenRecorderPlatform.instance.getPlatformVersion();
   }
 
-  Future<Map<String, dynamic>> startRecording(
+  Future<bool> startRecording(
       {required String filename, String? foldername, bool? recordAudio}) async {
     var response = await _channel.invokeMethod('startRecording', {
       "filename": filename,
       "foldername": foldername,
       "recordAudio": recordAudio
     });
-    var formatResponse = RecordOutput.fromJson(json.decode(response));
-    return formatResponse.toJson();
+    return response;
   }
 
-  Future<Map<String, dynamic>> stopRecording() async {
+  Future<bool> stopRecording() async {
     var response = await _channel.invokeMethod('stopRecording');
-    var formatResponse = RecordOutput.fromJson(json.decode(response));
-    return formatResponse.toJson();
+    return response;
   }
 
-  Future<Map<String, dynamic>> pauseRecording() async {
+  Future<bool> pauseRecording() async {
     var response = await _channel.invokeMethod('pauseRecording');
-    var formatResponse = RecordOutput.fromJson(json.decode(response));
-    return formatResponse.toJson();
+    return response;
   }
 
-  Future<Map<String, dynamic>> resumeRecording() async {
+  Future<bool> resumeRecording() async {
     var response = await _channel.invokeMethod('resumeRecording');
-    var formatResponse = RecordOutput.fromJson(json.decode(response));
-    return formatResponse.toJson();
+    return response;
   }
 
   // Not all Android API's support MediaRecorder stop/pause
