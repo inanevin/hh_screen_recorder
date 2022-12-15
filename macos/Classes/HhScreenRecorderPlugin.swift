@@ -3,9 +3,8 @@ import FlutterMacOS
 import ReplayKit
 
 public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
-                                     RPPreviewViewControllerDelegate {
+                                     {
     
-  var flutterRes : FlutterResult?
     
 
   public static func register(with registrar: FlutterPluginRegistrar) {
@@ -51,7 +50,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
                       return
                   }
          
-                
+                 result(true)
               }
               
           }
@@ -84,12 +83,4 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
      
   }
     
-    @available(OSX 11.0, *)
-    public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
-        
-        NSApplication.sharedApplication().keyWindow!.rootViewController?.dismiss(animated: true)
-        flutterRes?(true)
-        print("HHRecorder: Stopped recording")
-
-      }
 }
