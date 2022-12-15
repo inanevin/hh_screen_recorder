@@ -6,7 +6,6 @@ import 'dart:io';
 import 'hh_screen_recorder_platform_interface.dart';
 import 'package:flutter/services.dart';
 
-
 RecordOutput recordOutputFromJson(String str) =>
     RecordOutput.fromJson(json.decode(str));
 
@@ -39,36 +38,36 @@ class RecordOutput {
 }
 
 class HhScreenRecorder {
-
-    static const MethodChannel _channel = MethodChannel('hh_screen_recorder');
+  static const MethodChannel _channel = MethodChannel('hh_screen_recorder');
 
   Future<String?> getPlatformVersion() {
     return HhScreenRecorderPlatform.instance.getPlatformVersion();
   }
 
-  Future<Map<String, dynamic>> startRecording({required String filename, String? foldername, bool? recordAudio}) async
-  {
-    var response = await _channel.invokeMethod('startRecording',{ "filename": filename, "foldername": foldername, "recordAudio": recordAudio});
+  Future<Map<String, dynamic>> startRecording(
+      {required String filename, String? foldername, bool? recordAudio}) async {
+    var response = await _channel.invokeMethod('startRecording', {
+      "filename": filename,
+      "foldername": foldername,
+      "recordAudio": recordAudio
+    });
     var formatResponse = RecordOutput.fromJson(json.decode(response));
     return formatResponse.toJson();
   }
 
-  Future<Map<String, dynamic>> stopRecording() async
-  {
+  Future<Map<String, dynamic>> stopRecording() async {
     var response = await _channel.invokeMethod('stopRecording');
     var formatResponse = RecordOutput.fromJson(json.decode(response));
     return formatResponse.toJson();
   }
-  
-  Future<Map<String, dynamic>> pauseRecording() async
-  {
+
+  Future<Map<String, dynamic>> pauseRecording() async {
     var response = await _channel.invokeMethod('pauseRecording');
     var formatResponse = RecordOutput.fromJson(json.decode(response));
     return formatResponse.toJson();
   }
 
-  Future<Map<String, dynamic>> resumeRecording() async
-  {
+  Future<Map<String, dynamic>> resumeRecording() async {
     var response = await _channel.invokeMethod('resumeRecording');
     var formatResponse = RecordOutput.fromJson(json.decode(response));
     return formatResponse.toJson();
@@ -76,16 +75,16 @@ class HhScreenRecorder {
 
   // Not all Android API's support MediaRecorder stop/pause
   // Do not let the user pause if so.
-  Future<bool> isPauseResumeEnabled() async
-  {
+  // iOS Replay Kit does not support this at all atm.
+  Future<bool> isPauseResumeEnabled() async {
     var response = await _channel.invokeMethod('isPauseResumeEnabled');
     return response;
   }
 
   // Should check for device information,
   // Whether h264 encoder & MP4 file format is supported or not.
-  Future<bool> isRecordingSupported() async
-  {
+  // True for all iOS & macOS devices HH supports.
+  Future<bool> isRecordingSupported() async {
     var response = await _channel.invokeMethod('isRecordingSupported');
     return response;
   }
