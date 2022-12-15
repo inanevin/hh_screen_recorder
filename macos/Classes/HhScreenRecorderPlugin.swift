@@ -50,10 +50,13 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
                       result(false)
                       return
                   }
+            
                   
                   preview.modalPresentationStyle = .overFullScreen
                   preview.previewControllerDelegate = self
-                    UIApplication.shared.delegate?.window??.rootViewController?.present(preview, animated: true)
+                  
+                  NSApplication.sharedApplication().keyWindow!.rootViewController.present(preview, animated: true)
+                   // UIApplication.shared.delegate?.window??.rootViewController?.present(preview, animated: true)
                 
               }
               
@@ -90,7 +93,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
     @available(OSX 11.0, *)
     public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
         
-        UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
+        NSApplication.sharedApplication().keyWindow!.rootViewController?.dismiss(animated: true)
         flutterRes?(true)
         print("HHRecorder: Stopped recording")
 
