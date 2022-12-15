@@ -239,12 +239,12 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   void sendFlutterResult(boolean success, String msg)
   {
-    Map<Object, Object> dataMap = new HashMap<Object, Object>();
-    dataMap.put("filename", m_filename);
-    dataMap.put("success", success);
-    dataMap.put("msg", msg);
-    JSONObject jsonObj = new JSONObject(dataMap);
-    m_flutterResult.success(jsonObj.toString());
+    // Map<Object, Object> dataMap = new HashMap<Object, Object>();
+    // dataMap.put("filename", m_filename);
+    // dataMap.put("success", success);
+    // dataMap.put("msg", msg);
+    // JSONObject jsonObj = new JSONObject(dataMap);
+    m_flutterResult.success(success);
     System.out.println(msg);
   }
 
