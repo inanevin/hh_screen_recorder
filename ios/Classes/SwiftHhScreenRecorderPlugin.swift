@@ -15,7 +15,7 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
 
-    flutterRes = result?
+    flutterRes = result!
       
     if (call.method == "startRecording")
     {
@@ -80,7 +80,7 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
   public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
       
       UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
-      flutterRes(true)
+      flutterRes?(true)
       print("HHRecorder: Stopped recording")
 
     }
