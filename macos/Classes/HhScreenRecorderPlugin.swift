@@ -2,7 +2,8 @@ import Cocoa
 import FlutterMacOS
 import ReplayKit
 
-public class HhScreenRecorderPlugin: NSObject, FlutterPlugin
+public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
+                                     RPPreviewViewControllerDelegate
                                      {
     
     
@@ -38,13 +39,19 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin
           {
               print("HHRecorder: Attempting to stop recording & show preview window")
 
-              RPScreenRecorder.shared().stopRecording { preview, err in
+              RPScreenRecorder.shared().stopRecording { previewViewController, err in
           
                   
                   if let err = err {
                       print("HHRecorder: Error stopping recording: \(err.localizedDescription)")
                       result(false)
                       return
+                  }
+                  
+                  if let previewViewController = previewViewController {
+                      
+                      previewViewController.modalPresentationStyle = .overFullScreen
+                      preview.previewControllerDelegate = self
                   }
                   
                   
@@ -81,5 +88,13 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin
       }
      
   }
+    
+    public func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
+        
+        UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
+        flutterRes?(true)
+        print("HHRecorder: Stopped recording")
+
+      }
     
 }

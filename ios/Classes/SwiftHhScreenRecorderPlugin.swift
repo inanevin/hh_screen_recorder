@@ -50,9 +50,9 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
             }
 
             if UIDevice.current.userInterfaceIdiom == .pad {
-            previewViewController.modalPresentationStyle = .popover
-            previewViewController.popoverPresentationController?.sourceRect = .zero
-            previewViewController.popoverPresentationController?.sourceView =
+            preview.modalPresentationStyle = .popover
+            preview.popoverPresentationController?.sourceRect = .zero
+            preview.popoverPresentationController?.sourceView =
                 UIApplication.shared.delegate?.window??.rootViewController?.view
         }else {
           preview.modalPresentationStyle = .overFullScreen
