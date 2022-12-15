@@ -39,11 +39,7 @@ public class HhScreenRecorderPlugin: NSObject, FlutterPlugin
               print("HHRecorder: Attempting to stop recording & show preview window")
 
               RPScreenRecorder.shared().stopRecording { preview, err in
-                guard let preview = preview else {
-                    print("HHRecorder: Error stopping recording: no preview window!");
-                    result(false)
-                    return
-                }
+          
                   
                   if let err = err {
                       print("HHRecorder: Error stopping recording: \(err.localizedDescription)")
