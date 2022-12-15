@@ -2,7 +2,7 @@ import Cocoa
 import FlutterMacOS
 import ReplayKit
 
-public class HhScreenRecorderPlugin: NSObject, FlutterPlugin,
+public class HhScreenRecorderPlugin: NSObject, FlutterPlugin
                                      {
     
     
