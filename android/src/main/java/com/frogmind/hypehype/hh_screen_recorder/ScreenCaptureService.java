@@ -244,7 +244,7 @@ public class ScreenCaptureService extends Service {
 
         if(m_recordAudio)
         {
-            m_mediaRecorder.setAudioSource(MediaRecorder.AudioSource.REMOTE_SUBMIX);
+            m_mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             m_mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             m_mediaRecorder.setAudioEncodingBitRate(128000);
             m_mediaRecorder.setAudioSamplingRate(44100);
