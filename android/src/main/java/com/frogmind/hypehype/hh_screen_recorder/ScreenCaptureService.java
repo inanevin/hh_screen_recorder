@@ -212,29 +212,6 @@ public class ScreenCaptureService extends Service {
         {
             m_isRecording = false;
             m_mediaRecorder.stop();
-
-           // ContentResolver contentResolver = HhScreenRecorderPlugin._instance.getActivity().getApplicationContext().getContentResolver();
-
-            // Create a new ContentValues object
-            //ContentValues values = new ContentValues();
-
-            // Specify the video's title and description
-            //values.put(MediaStore.Video.Media.TITLE, m_outputFilename);
-            //values.put(MediaStore.Video.Media.DISPLAY_NAME, m_outputFilename);
-            //values.put(MediaStore.Video.Media.DESCRIPTION, "HypeHype Screen Recorder.");
-            //values.put(MediaStore.Video.Media.DATA, m_outputFile.getAbsolutePath());
-            //values.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/" + m_folderName);
-
-            // System.out.println("HHRecorder: Saving MediaStore :" + m_outputFile.getAbsolutePath());
-            // Mimetype video/mp4-es etc. are not supported in insert.
-            //String mimeType = HhScreenRecorderPlugin.SELECTED_MIME_TYPE.equals(HhScreenRecorderPlugin.MIME_TYPE_FALLBACK) ? "video/3gpp" : "video/mp4";
-            //values.put(MediaStore.Video.Media.MIME_TYPE, mimeType);
-            //Uri videoInsertUri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
-
-            // Save the video to the user's gallery app
-            //Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            //mediaScanIntent.setData(videoInsertUri);
-            //sendBroadcast(mediaScanIntent);
         }
 
         HhScreenRecorderPlugin._instance.onServiceDestroyed();

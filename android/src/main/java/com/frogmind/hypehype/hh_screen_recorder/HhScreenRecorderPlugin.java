@@ -337,7 +337,6 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
       service.putExtra("width", m_width);
       service.putExtra("height", m_height);
       service.putExtra("density", m_density);
-      service.putExtra("foldername", m_foldername);
       checkAddContentValues();
 
       System.out.println("HHRecorder: requesting to start the service");
@@ -349,7 +348,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
     }
     catch(Exception e)
     {
-      sendFlutterResult(true, "HHRecorder: Start Recording -> " + Log.getStackTraceString(e));
+      sendFlutterResult(false, "HHRecorder: Start Recording -> " + Log.getStackTraceString(e));
     }
   }
 
@@ -361,8 +360,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   public void onFailedToStartCapture(String reason)
   {
-    m_recordingState = RecordingState.None;
-    sendFlutterResult(true, "HHRecorder: Start Recording -> Error: " + reason);
+    sendFlutterResult(false, "HHRecorder: Start Recording -> Error: " + reason);
 
     try {
       Intent mService = new Intent(m_context, ScreenCaptureService.class);
@@ -412,17 +410,14 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   public void onServiceDestroyed()
   {
-    // Stopped recording
+    if(m_recordingState != RecordingState.Recording)
+      return;
 
-    // Share intent
-
-    //File file = new File(m_finalFullPath);
-    //Uri fileUri = FileProvider.getUriForFile(HhScreenRecorderPlugin._instance.getActivity().getApplicationContext(), "com.frogmind.hypehype.hh_screen_recorder.provider", file);
+    m_recordingState = RecordingState.None;
     Intent send = new Intent(Intent.ACTION_SEND);
     send.putExtra(Intent.EXTRA_STREAM, m_uri);
     send.setType("video/*");
     send.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-    //HhScreenRecorderPlugin._instance.getActivity().startActivity(Intent.createChooser(send, "Send Recording"));
     HhScreenRecorderPlugin._instance.getActivity().startActivityForResult(Intent.createChooser(send, "Send Recording"),  SHARE_REQUEST_CODE);
 
   }
