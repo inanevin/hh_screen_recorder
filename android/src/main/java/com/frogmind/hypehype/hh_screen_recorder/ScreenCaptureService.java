@@ -245,7 +245,6 @@ public class ScreenCaptureService extends Service {
         if(m_recordAudio)
         {
             m_mediaRecorder.setAudioSource(MediaRecorder.AudioSource.REMOTE_SUBMIX);
-            m_mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             m_mediaRecorder.setAudioEncodingBitRate(128000);
             m_mediaRecorder.setAudioSamplingRate(44100);
         }
@@ -258,6 +257,10 @@ public class ScreenCaptureService extends Service {
         else
             m_mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
 
+        if(m_recordAudio)
+        {
+            m_mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        }
         m_mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         m_mediaRecorder.setVideoSize(m_screenWidth, m_screenHeight);
         //m_mediaRecorder.setVideoEncodingBitRate(12000000);
