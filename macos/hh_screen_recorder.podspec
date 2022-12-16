@@ -5,13 +5,13 @@
 Pod::Spec.new do |s|
   s.name             = 'hh_screen_recorder'
   s.version          = '0.0.1'
-  s.summary          = 'Screen recorder functionality for HypeHype.'
+  s.summary          = 'Screen recorder.'
   s.description      = <<-DESC
-Screen recorder functionality for HypeHype.
+Screen recorder.
                        DESC
-  s.homepage         = 'http://hypehype.com'
+  s.homepage         = 'http://inanevin.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'HypeHype' => 'inan@hypehype.com' }
+  s.author           = { 'InanEvin' => 'inanevin@gmail.com' }
 
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*'
