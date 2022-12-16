@@ -1,6 +1,6 @@
 name: hh_screen_recorder
 description: -desc-
-version: 0.0.5
+version: 1.0.0
 homepage: https://github.com/inanevin/hh_screen_recorder
 
 environment:
