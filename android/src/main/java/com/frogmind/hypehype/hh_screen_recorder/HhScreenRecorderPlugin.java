@@ -77,6 +77,7 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
   private static final int SCREEN_RECORD_REQUEST_CODE = 777;
   private static final int SHARE_REQUEST_CODE = 888;
+  private static final int AUDIO_PERMISSION_CODE = 999;
   private Intent service;
   public static HhScreenRecorderPlugin _instance;
   private boolean m_canResumePause = false;
@@ -257,7 +258,10 @@ public class HhScreenRecorderPlugin implements FlutterPlugin, MethodCallHandler,
 
 
     m_activity.startActivityForResult(permissionIntent, SCREEN_RECORD_REQUEST_CODE);
-
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) //check if permission request is necessary
+    {
+      getActivity().requestPermissions(new String[] {android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, AUDIO_PERMISSION_CODE);
+    }
     System.out.println("HHRecorder: Start Recording -> Started permission prompt.");
   }
 
