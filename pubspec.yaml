@@ -1,6 +1,6 @@
 name: hh_screen_recorder
 description: -desc-
-version: 1.6.5
+version: 1.6.7
 homepage: https://github.com/inanevin/hh_screen_recorder
 
 environment:
@@ -35,7 +35,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.frogmind.hypehype.hh_screen_recorder
+        package: ${applicationId}.hh_screen_recorder
         pluginClass: HhScreenRecorderPlugin
       ios:
         pluginClass: HhScreenRecorderPlugin
