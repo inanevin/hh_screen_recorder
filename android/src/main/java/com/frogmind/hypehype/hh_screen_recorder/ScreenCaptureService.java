@@ -1,4 +1,4 @@
-package com.frogmind.hypehype.hh_screen_recorder;
+package com.ie.hh_screen_recorder;
 
 import android.app.Notification;
 import android.app.NotificationChannel;

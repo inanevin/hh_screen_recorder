@@ -1,4 +1,4 @@
-package com.frogmind.hypehype.hh_screen_recorder;
+package com.ie.hh_screen_recorder;
 
 import static android.content.Context.WINDOW_SERVICE;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;

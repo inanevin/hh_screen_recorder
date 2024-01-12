@@ -1,4 +1,4 @@
-package com.frogmind.hypehype.hh_screen_recorder;
+package com.ie.hh_screen_recorder;
 /*
  * ScreenRecordingSample
  * Sample project to capture and save audio from internal and video from screen as MPEG4 file.
