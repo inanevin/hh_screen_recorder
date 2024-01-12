@@ -1,4 +1,4 @@
-group 'com.frogmind.hypehype.hh_screen_recorder'
+group 'com.ie.hh_screen_recorder'
 version '1.0'
 
 buildscript {
