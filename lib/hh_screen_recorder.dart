@@ -45,12 +45,13 @@ class HhScreenRecorder {
   }
 
   Future<bool> startRecording(
-      {required String filename, String? foldername, bool? recordAudio}) async {
+      {required String filename, String? foldername, int bitrate = 120000000, int fps = 60}) async {
      try{
         var response = await _channel.invokeMethod('startRecording', {
           "filename": filename,
           "foldername": foldername,
-          "recordAudio": recordAudio
+          "bitrate" : bitrate,
+          "fps" : fps,
         });
         return response;
     }
@@ -63,42 +64,6 @@ class HhScreenRecorder {
   Future<bool> stopRecording() async {
      try{
        var response = await _channel.invokeMethod('stopRecording');
-      return response;
-    }
-    on Exception catch(ex)
-    {
-      throw Exception(ex.toString());
-    }
-  }
-
-  Future<bool> pauseRecording() async {
-     try{
-      var response = await _channel.invokeMethod('pauseRecording');
-      return response;
-    }
-    on Exception catch(ex)
-    {
-      throw Exception(ex.toString());
-    }
-  }
-
-  Future<bool> resumeRecording() async {
-    try{
-      var response = await _channel.invokeMethod('resumeRecording');
-      return response;
-    }
-    on Exception catch(ex)
-    {
-      throw Exception(ex.toString());
-    }
-  }
-
-  // Not all Android API's support MediaRecorder stop/pause
-  // Do not let the user pause if so.
-  // iOS Replay Kit does not support this at all atm.
-  Future<bool> isPauseResumeEnabled() async {
-    try{
-      var response = await _channel.invokeMethod('isPauseResumeEnabled');
       return response;
     }
     on Exception catch(ex)

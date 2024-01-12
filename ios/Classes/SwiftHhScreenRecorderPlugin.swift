@@ -30,7 +30,6 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
             print("HHRecorder: Started recording.")
             result(true)
         }
-        
     }
     else if (call.method == "stopRecording")
     {
@@ -61,18 +60,6 @@ public class SwiftHhScreenRecorderPlugin: NSObject, FlutterPlugin, RPPreviewView
             UIApplication.shared.delegate?.window??.rootViewController?.present(preview, animated: true)
         }
         
-    }
-    else if (call.method == "pauseRecording") 
-    {
-        result(false)
-    }
-    else if (call.method == "resumeRecording") 
-    {
-        result(false)
-    }
-    else if (call.method == "isPauseResumeEnabled") 
-    {
-        result(false)
     }
     else if (call.method == "isRecordingSupported")
     {

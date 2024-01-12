@@ -69,14 +69,15 @@ public class CodecUtility {
         Configuration configuration = m_context.getResources().getConfiguration();
         boolean isLandscape = configuration.orientation == ORIENTATION_LANDSCAPE;
 
-        CamcorderProfile camcorderProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
-        int cameraWidth = camcorderProfile != null ? camcorderProfile.videoFrameWidth : -1;
-        int cameraHeight = camcorderProfile != null ? camcorderProfile.videoFrameHeight : -1;
-        int cameraFrameRate = camcorderProfile != null ? camcorderProfile.videoFrameRate : 30;
+        //CamcorderProfile camcorderProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+        //int cameraWidth = camcorderProfile != null ? camcorderProfile.videoFrameWidth : -1;
+        //int cameraHeight = camcorderProfile != null ? camcorderProfile.videoFrameHeight : -1;
+        //int cameraFrameRate = camcorderProfile != null ? camcorderProfile.videoFrameRate : 30;
 
+        return new RecordingInfo(displayWidth, displayHeight,60, displayDensity);
 
-        return calculateRecordingInfo(displayWidth, displayHeight, displayDensity, isLandscape,
-                cameraWidth, cameraHeight, cameraFrameRate, 100);
+        //return calculateRecordingInfo(displayWidth, displayHeight, displayDensity, isLandscape,
+               // cameraWidth, cameraHeight, cameraFrameRate, 100);
     }
 
     static RecordingInfo calculateRecordingInfo(int displayWidth, int displayHeight, int displayDensity, boolean isLandscapeDevice, int cameraWidth, int cameraHeight, int cameraFrameRate, int sizePercentage) {
