@@ -1,4 +1,4 @@
-package com.ie.hh_screen_recorder;
+package com.inan.evin.hh_screen_recorder;
 /*
  * ScreenRecordingSample
  * Sample project to cature and save audio from internal and video from screen as MPEG4 file.

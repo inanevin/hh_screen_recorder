@@ -1,4 +1,4 @@
-package com.ie.hh_screen_recorder;
+package com.inan.evin.hh_screen_recorder;
 
 import static android.content.Context.WINDOW_SERVICE;
 

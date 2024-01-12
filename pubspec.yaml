@@ -1,6 +1,6 @@
 name: hh_screen_recorder
 description: -desc-
-version: 1.7.2
+version: 1.7.3
 homepage: https://github.com/inanevin/hh_screen_recorder
 
 environment:
@@ -35,7 +35,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.ie.hh_screen_recorder
+        package: com.inan.evin.hh_screen_recorder
         pluginClass: HhScreenRecorderPlugin
       ios:
         pluginClass: HhScreenRecorderPlugin

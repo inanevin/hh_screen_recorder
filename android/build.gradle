@@ -1,4 +1,4 @@
-group 'com.ie.hh_screen_recorder'
+group 'com.inan.evin.hh_screen_recorder'
 version '1.0'
 
 buildscript {

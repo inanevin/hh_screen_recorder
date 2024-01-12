@@ -45,29 +45,28 @@ class HhScreenRecorder {
   }
 
   Future<bool> startRecording(
-      {required String filename, String? foldername, int bitrate = 120000000, int fps = 60}) async {
-     try{
-        var response = await _channel.invokeMethod('startRecording', {
-          "filename": filename,
-          "foldername": foldername,
-          "bitrate" : bitrate,
-          "fps" : fps,
-        });
-        return response;
-    }
-    on Exception catch(ex)
-    {
+      {required String filename,
+      String? foldername,
+      int bitrate = 120000000,
+      int fps = 60}) async {
+    try {
+      var response = await _channel.invokeMethod('startRecording', {
+        "filename": filename,
+        "foldername": foldername,
+        "bitrate": bitrate,
+        "fps": fps,
+      });
+      return response;
+    } on Exception catch (ex) {
       throw Exception(ex.toString());
     }
   }
 
   Future<bool> stopRecording() async {
-     try{
-       var response = await _channel.invokeMethod('stopRecording');
+    try {
+      var response = await _channel.invokeMethod('stopRecording');
       return response;
-    }
-    on Exception catch(ex)
-    {
+    } on Exception catch (ex) {
       throw Exception(ex.toString());
     }
   }
@@ -76,11 +75,10 @@ class HhScreenRecorder {
   // Whether h264 encoder & MP4 file format is supported or not.
   // True for all iOS & macOS devices HH supports.
   Future<bool> isRecordingSupported() async {
-    try{
+    try {
       var response = await _channel.invokeMethod('isRecordingSupported');
       return response;
-    }
-    on Exception catch (ex) {
+    } on Exception catch (ex) {
       throw Exception(ex.toString());
     }
   }
