@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="${applicationId}.hh_screen_recorder">
+  package="com.frogmind.hypehype.hh_screen_recorder">
   <meta-data android:name="flutterEmbedding" android:value="2"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
